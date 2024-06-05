@@ -1,6 +1,8 @@
 # CDFXHouTools
 A collection of Houdini scripts and HDA's to make life easier.
 
+# This repo is still under construction.
+
 ## Installation
 This repo is structured as a Houdini package.
 Place this repo (CDFXHouTools folder) and the CDFXHouTools.json in your Houdini packages folder.
