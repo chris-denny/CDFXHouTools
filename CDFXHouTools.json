@@ -1,0 +1,7 @@
+{
+	"env":
+	[
+		{"CDFXHouTools":"$HOUDINI_PACKAGE_PATH/CDFXHouTools"},
+		{"HOUDINI_PATH": "$CDFXHouTools"}
+	]
+}
