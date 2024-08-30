@@ -1,0 +1,408 @@
+<?xml version="1.0"?>
+<materialx version="1.38">
+  <!-- Generated in Houdini from /stage/materiallibrary1/karmamaterial/MtlX_Triplanar -->
+  <nodedef name="ND_CDFX_MtlX_Triplanar_vector3_float_color4_color3_vector2_vector2_vector2_color3" node="CDFX_MtlX_Triplanar" nodegroup="CDFX">
+    <input name="tex_x_file" type="filename" uiname="X File" value="" />
+    <input name="tex_y_file" type="filename" uiname="Y File" value="" />
+    <input name="tex_z_file" type="filename" uiname="Z File" value="" />
+    <input name="tex_default_color4" type="color4" uiname="Default" value="0, 0, 0, 1" />
+    <input name="tex_uvtiling" type="vector2" uiname="Uvtiling" value="1, 1" />
+    <input name="tex_uvoffset" type="vector2" uiname="Uvoffset" value="0, 0" />
+    <input name="tex_filtertype" type="string" uiname="Filtertype" value="linear" />
+    <input name="tex_framerange" type="string" uiname="Framerange" value="" />
+    <input name="tex_frameoffset" type="integer" uiname="Frameoffset" uisoftmin="0" uisoftmax="10" value="0" />
+    <input name="tex_frameendaction" type="string" uiname="Frameendaction" value="constant" />
+    <input name="tex_blend" type="float" uiname="Blend" uimin="0.0" uisoftmax="10.0" value="0.2" />
+    <input name="tex_blendcurve" type="float" uiname="Blend Curve" uisoftmin="0.0" uisoftmax="10.0" value="2" />
+    <input name="blend_noise_strength" type="float" uiname="Strength" uisoftmin="0.0" uisoftmax="1.0" value="0" />
+    <input name="blend_noise_uniformscale" type="float" uiname="Uniform Scale" uisoftmin="0.0" uisoftmax="10.0" value="1" />
+    <input name="blend_noise_scale" type="vector3" uiname="Scale" value="1, 1, 1" />
+    <input name="blend_noise_offset" type="vector3" uiname="Offset" value="0, 0, 0" />
+    <input name="blend_noise_seed" type="integer" uiname="Random Seed" uisoftmin="0" uisoftmax="10" value="0" />
+    <input name="edge_noise_strength" type="float" uiname="Strength" uisoftmin="0.0" uisoftmax="1.0" value="0" />
+    <input name="edge_noise_uniformscale" type="float" uiname="Uniform Scale" uisoftmin="0.0" uisoftmax="10.0" value="1" />
+    <input name="edge_noise_scale" type="vector3" uiname="Scale" value="1, 1, 1" />
+    <input name="edge_noise_offset" type="vector3" uiname="Offset" value="0, 0, 0" />
+    <input name="edge_noise_seed" type="integer" uiname="Random Seed" uisoftmin="0" uisoftmax="10" value="0" />
+    <input name="coord_scale" type="vector3" uiname="Scale" value="1, 1, 1" />
+    <input name="coord_offset" type="vector3" uiname="Offset" value="0, 0, 0" />
+    <input name="coord_rotate" type="vector3" uiname="Rotate" value="0, 0, 0" />
+    <input name="coord_space" type="string" uiname="Space" value="object" />
+    <input name="do_rest" type="integer" uiname="Rest" uimin="0" uimax="1" value="0" />
+    <input name="rest_geomprop" type="string" uiname="Rest Position" value="rest" />
+    <input name="rnml_geomprop" type="string" uiname="Rest Normals" value="rnml" />
+    <output name="color" type="vector3" />
+    <output name="alpha" type="float" />
+    <output name="rgba" type="color4" />
+    <output name="edge_weight" type="color3" />
+    <output name="x_uv" type="vector2" />
+    <output name="y_uv" type="vector2" />
+    <output name="z_uv" type="vector2" />
+    <output name="weights" type="color3" />
+  </nodedef>
+  <nodegraph name="NG_CDFX_MtlX_Triplanar_vector3_float_color4_color3_vector2_vector2_vector2_color3" nodedef="ND_CDFX_MtlX_Triplanar_vector3_float_color4_color3_vector2_vector2_vector2_color3">
+    <combine3 name="combine7" type="vector3">
+      <input name="in1" type="float" nodename="separate4c1" output="outr" value="0" />
+      <input name="in2" type="float" nodename="separate4c1" output="outg" value="0" />
+      <input name="in3" type="float" nodename="separate4c1" output="outb" value="0" />
+    </combine3>
+    <output name="color" type="vector3" nodename="combine7" />
+    <separate4 name="separate4c1" type="multioutput">
+      <input name="in" type="color4" nodename="mix2" value="0, 0, 0, 0" />
+    </separate4>
+    <output name="alpha" type="float" nodename="separate4c1" output="outa" />
+    <mix name="mix2" type="color4">
+      <input name="fg" type="color4" nodename="tiledimage3" value="0, 0, 0, 0" />
+      <input name="bg" type="color4" nodename="mix1" value="0, 0, 0, 0" />
+      <input name="mix" type="float" nodename="separate3c3" output="outb" value="0" />
+    </mix>
+    <output name="rgba" type="color4" nodename="mix2" />
+    <range name="range2" type="color3">
+      <input name="in" type="color3" nodename="luminance1" value="0, 0, 0" />
+      <input name="inlow" type="float" value="0.5" />
+      <input name="inhigh" type="float" value="1" />
+      <input name="gamma" type="float" value="1" />
+      <input name="outlow" type="float" value="0" />
+      <input name="outhigh" type="float" value="1" />
+      <input name="doclamp" type="boolean" value="true" />
+    </range>
+    <output name="edge_weight" type="color3" nodename="range2" />
+    <rotate2d name="rotate2d1" type="vector2">
+      <input name="in" type="vector2" nodename="multiply5" value="0, 0" />
+      <input name="amount" type="float" nodename="separate3v2" output="outx" value="-0" />
+    </rotate2d>
+    <output name="x_uv" type="vector2" nodename="rotate2d1" />
+    <rotate2d name="rotate2d2" type="vector2">
+      <input name="in" type="vector2" nodename="multiply6" value="0, 0" />
+      <input name="amount" type="float" nodename="separate3v2" output="outy" value="-0" />
+    </rotate2d>
+    <output name="y_uv" type="vector2" nodename="rotate2d2" />
+    <rotate2d name="rotate2d3" type="vector2">
+      <input name="in" type="vector2" nodename="multiply7" value="0, 0" />
+      <input name="amount" type="float" nodename="separate3v2" output="outz" value="-0" />
+    </rotate2d>
+    <output name="z_uv" type="vector2" nodename="rotate2d3" />
+    <combine3 name="combine3" type="color3">
+      <input name="in1" type="float" nodename="mix4" value="0" />
+      <input name="in2" type="float" nodename="mix6" value="0" />
+      <input name="in3" type="float" nodename="mix7" value="0" />
+    </combine3>
+    <output name="weights" type="color3" nodename="combine3" />
+    <tiledimage name="tiledimage3" type="color4">
+      <input name="file" type="filename" interfacename="tex_z_file" value="" />
+      <input name="default" type="color4" interfacename="tex_default_color4" value="0, 0, 0, 1" />
+      <input name="texcoord" type="vector2" nodename="rotate2d3" value="0, 0" />
+      <input name="uvtiling" type="vector2" interfacename="tex_uvtiling" value="1, 1" />
+      <input name="uvoffset" type="vector2" interfacename="tex_uvoffset" value="0, 0" />
+      <input name="filtertype" type="string" interfacename="tex_filtertype" value="linear" />
+      <input name="framerange" type="string" interfacename="tex_framerange" value="" />
+      <input name="frameoffset" type="integer" interfacename="tex_frameoffset" value="0" />
+      <input name="frameendaction" type="string" interfacename="tex_frameendaction" value="constant" />
+      <input name="realworldimagesize" type="vector2" value="1, 1" />
+      <input name="realworldtilesize" type="vector2" value="1, 1" />
+    </tiledimage>
+    <mix name="mix1" type="color4">
+      <input name="fg" type="color4" nodename="tiledimage1" value="0, 0, 0, 0" />
+      <input name="bg" type="color4" nodename="tiledimage2" value="0, 0, 0, 0" />
+      <input name="mix" type="float" nodename="separate3c3" output="outr" value="0" />
+    </mix>
+    <separate3 name="separate3c3" type="multioutput">
+      <input name="in" type="color3" nodename="combine3" value="0, 0, 0" />
+    </separate3>
+    <luminance name="luminance1" type="color3">
+      <input name="in" type="color3" nodename="combine3" value="0, 0, 0" />
+      <input name="lumacoeffs" type="color3" value="0.5, 0.5, 0.5" />
+    </luminance>
+    <multiply name="multiply5" type="vector2">
+      <input name="in1" type="vector2" nodename="swizzle1" value="0, 0" />
+      <input name="in2" type="vector2" nodename="combine2" value="1, 1" />
+    </multiply>
+    <separate3 name="separate3v2" type="multioutput">
+      <input name="in" type="vector3" nodename="multiply10" value="0, 0, 0" />
+    </separate3>
+    <multiply name="multiply6" type="vector2">
+      <input name="in1" type="vector2" nodename="swizzle2" value="0, 0" />
+      <input name="in2" type="vector2" nodename="combine4" value="1, 1" />
+    </multiply>
+    <multiply name="multiply7" type="vector2">
+      <input name="in1" type="vector2" nodename="swizzle3" value="0, 0" />
+      <input name="in2" type="vector2" nodename="combine5" value="1, 1" />
+    </multiply>
+    <mix name="mix4" type="float">
+      <input name="fg" type="float" nodename="mix3" value="0" />
+      <input name="bg" type="float" nodename="power1" value="0" />
+      <input name="mix" type="float" interfacename="blend_noise_strength" value="0" />
+    </mix>
+    <mix name="mix6" type="float">
+      <input name="fg" type="float" nodename="mix5" value="0" />
+      <input name="bg" type="float" nodename="power2" value="0" />
+      <input name="mix" type="float" interfacename="blend_noise_strength" value="0" />
+    </mix>
+    <mix name="mix7" type="float">
+      <input name="fg" type="float" nodename="mix8" value="0" />
+      <input name="bg" type="float" nodename="power3" value="0" />
+      <input name="mix" type="float" interfacename="blend_noise_strength" value="0" />
+    </mix>
+    <tiledimage name="tiledimage1" type="color4">
+      <input name="file" type="filename" interfacename="tex_x_file" value="" />
+      <input name="default" type="color4" interfacename="tex_default_color4" value="0, 0, 0, 1" />
+      <input name="texcoord" type="vector2" nodename="rotate2d1" value="0, 0" />
+      <input name="uvtiling" type="vector2" interfacename="tex_uvtiling" value="1, 1" />
+      <input name="uvoffset" type="vector2" interfacename="tex_uvoffset" value="0, 0" />
+      <input name="filtertype" type="string" interfacename="tex_filtertype" value="linear" />
+      <input name="framerange" type="string" interfacename="tex_framerange" value="" />
+      <input name="frameoffset" type="integer" interfacename="tex_frameoffset" value="0" />
+      <input name="frameendaction" type="string" interfacename="tex_frameendaction" value="constant" />
+      <input name="realworldimagesize" type="vector2" value="1, 1" />
+      <input name="realworldtilesize" type="vector2" value="1, 1" />
+    </tiledimage>
+    <tiledimage name="tiledimage2" type="color4">
+      <input name="file" type="filename" interfacename="tex_y_file" value="" />
+      <input name="default" type="color4" interfacename="tex_default_color4" value="0, 0, 0, 1" />
+      <input name="texcoord" type="vector2" nodename="rotate2d2" value="0, 0" />
+      <input name="uvtiling" type="vector2" interfacename="tex_uvtiling" value="1, 1" />
+      <input name="uvoffset" type="vector2" interfacename="tex_uvoffset" value="0, 0" />
+      <input name="filtertype" type="string" interfacename="tex_filtertype" value="linear" />
+      <input name="framerange" type="string" interfacename="tex_framerange" value="" />
+      <input name="frameoffset" type="integer" interfacename="tex_frameoffset" value="0" />
+      <input name="frameendaction" type="string" interfacename="tex_frameendaction" value="constant" />
+      <input name="realworldimagesize" type="vector2" value="1, 1" />
+      <input name="realworldtilesize" type="vector2" value="1, 1" />
+    </tiledimage>
+    <swizzle name="swizzle1" type="vector2">
+      <input name="in" type="vector3" nodename="add3" value="0, 0, 0" />
+      <input name="channels" type="string" value="zy" />
+    </swizzle>
+    <combine2 name="combine2" type="vector2">
+      <input name="in1" type="float" nodename="separate3v1" output="outx" value="0" />
+      <input name="in2" type="float" value="1" />
+    </combine2>
+    <multiply name="multiply10" type="vector3">
+      <input name="in1" type="vector3" interfacename="coord_rotate" value="0, 0, 0" />
+      <input name="in2" type="vector3" value="-1, -1, -1" />
+    </multiply>
+    <swizzle name="swizzle2" type="vector2">
+      <input name="in" type="vector3" nodename="add3" value="0, 0, 0" />
+      <input name="channels" type="string" value="xz" />
+    </swizzle>
+    <combine2 name="combine4" type="vector2">
+      <input name="in2" type="float" nodename="separate3v1" output="outy" value="1" />
+      <input name="in1" type="float" value="1" />
+    </combine2>
+    <swizzle name="swizzle3" type="vector2">
+      <input name="in" type="vector3" nodename="add3" value="0, 0, 0" />
+      <input name="channels" type="string" value="xy" />
+    </swizzle>
+    <combine2 name="combine5" type="vector2">
+      <input name="in1" type="float" nodename="separate3v1" output="outz" value="0" />
+      <input name="in2" type="float" value="1" />
+    </combine2>
+    <mix name="mix3" type="float">
+      <input name="fg" type="float" nodename="power1" value="0" />
+      <input name="bg" type="float" nodename="multiply1" value="0" />
+      <input name="mix" type="float" nodename="power1" value="0" />
+    </mix>
+    <power name="power1" type="float">
+      <input name="in1" type="float" nodename="range1" value="0" />
+      <input name="in2" type="float" interfacename="tex_blendcurve" value="2" />
+    </power>
+    <mix name="mix5" type="float">
+      <input name="fg" type="float" nodename="power2" value="0" />
+      <input name="bg" type="float" nodename="multiply2" value="0" />
+      <input name="mix" type="float" nodename="power2" value="0" />
+    </mix>
+    <power name="power2" type="float">
+      <input name="in1" type="float" nodename="range3" value="0" />
+      <input name="in2" type="float" interfacename="tex_blendcurve" value="2" />
+    </power>
+    <mix name="mix8" type="float">
+      <input name="fg" type="float" nodename="power3" value="0" />
+      <input name="bg" type="float" nodename="multiply3" value="0" />
+      <input name="mix" type="float" nodename="power3" value="0" />
+    </mix>
+    <power name="power3" type="float">
+      <input name="in1" type="float" nodename="range4" value="0" />
+      <input name="in2" type="float" interfacename="tex_blendcurve" value="2" />
+    </power>
+    <add name="add3" type="vector3">
+      <input name="in1" type="vector3" nodename="multiply8" value="0, 0, 0" />
+      <input name="in2" type="vector3" interfacename="coord_offset" value="0, 0, 0" />
+    </add>
+    <separate3 name="separate3v1" type="multioutput">
+      <input name="in" type="vector3" nodename="multiply4" value="0, 0, 0" />
+    </separate3>
+    <multiply name="multiply1" type="float">
+      <input name="in1" type="float" nodename="unifiednoise3d1" value="0" />
+      <input name="in2" type="float" nodename="power1" value="1" />
+    </multiply>
+    <range name="range1" type="float">
+      <input name="in" type="float" nodename="subtract1" value="0" />
+      <input name="inlow" type="float" nodename="add5" value="0.20001" />
+      <input name="inhigh" type="float" value="0" />
+      <input name="gamma" type="float" value="1" />
+      <input name="outlow" type="float" value="0" />
+      <input name="outhigh" type="float" value="1" />
+      <input name="doclamp" type="boolean" value="true" />
+    </range>
+    <multiply name="multiply2" type="float">
+      <input name="in1" type="float" nodename="unifiednoise3d1" value="0" />
+      <input name="in2" type="float" nodename="power2" value="1" />
+    </multiply>
+    <range name="range3" type="float">
+      <input name="in" type="float" nodename="subtract2" value="0" />
+      <input name="inlow" type="float" nodename="add5" value="0.20001" />
+      <input name="inhigh" type="float" value="0" />
+      <input name="gamma" type="float" value="1" />
+      <input name="outlow" type="float" value="0" />
+      <input name="outhigh" type="float" value="1" />
+      <input name="doclamp" type="boolean" value="true" />
+    </range>
+    <multiply name="multiply3" type="float">
+      <input name="in1" type="float" nodename="unifiednoise3d1" value="0" />
+      <input name="in2" type="float" nodename="power3" value="1" />
+    </multiply>
+    <range name="range4" type="float">
+      <input name="in" type="float" nodename="subtract3" value="0" />
+      <input name="inlow" type="float" nodename="add5" value="0.20001" />
+      <input name="inhigh" type="float" value="0" />
+      <input name="gamma" type="float" value="1" />
+      <input name="outlow" type="float" value="0" />
+      <input name="outhigh" type="float" value="1" />
+      <input name="doclamp" type="boolean" value="true" />
+    </range>
+    <multiply name="multiply8" type="vector3">
+      <input name="in1" type="vector3" nodename="switch1" value="0, 0, 0" />
+      <input name="in2" type="vector3" interfacename="coord_scale" value="1, 1, 1" />
+    </multiply>
+    <multiply name="multiply4" type="vector3">
+      <input name="in1" type="vector3" nodename="sign1" value="0, 0, 0" />
+      <input name="in2" type="vector3" value="-1, -1, 1" />
+    </multiply>
+    <unifiednoise3d name="unifiednoise3d1" type="float">
+      <input name="position" type="vector3" nodename="divide3" value="0, 0, 0" />
+      <input name="freq" type="vector3" nodename="divide5" value="1, 1, 1" />
+      <input name="offset" type="vector3" nodename="add4" value="0, 0, 0" />
+      <input name="jitter" type="float" value="1" />
+      <input name="outmin" type="float" value="0" />
+      <input name="outmax" type="float" value="1" />
+      <input name="clampoutput" type="boolean" value="true" />
+      <input name="octaves" type="integer" value="3" />
+      <input name="lacunarity" type="float" value="2" />
+      <input name="diminish" type="float" value="0.5" />
+      <input name="type" type="integer" value="0" />
+    </unifiednoise3d>
+    <subtract name="subtract1" type="float">
+      <input name="in1" type="float" nodename="max2" value="0" />
+      <input name="in2" type="float" nodename="separate3v3" output="outx" value="0" />
+    </subtract>
+    <add name="add5" type="float">
+      <input name="in1" type="float" interfacename="tex_blend" value="0" />
+      <input name="in2" type="float" value="1e-05" />
+    </add>
+    <subtract name="subtract2" type="float">
+      <input name="in1" type="float" nodename="max2" value="0" />
+      <input name="in2" type="float" nodename="separate3v3" output="outy" value="0" />
+    </subtract>
+    <subtract name="subtract3" type="float">
+      <input name="in1" type="float" nodename="max2" value="0" />
+      <input name="in2" type="float" nodename="separate3v3" output="outz" value="0" />
+    </subtract>
+    <switch name="switch1" type="vector3">
+      <input name="in1" type="vector3" nodename="pos" value="0, 0, 0" />
+      <input name="in2" type="vector3" nodename="rest" value="0, 0, 0" />
+      <input name="which" type="integer" interfacename="do_rest" value="0" />
+      <input name="in3" type="vector3" value="0, 0, 0" />
+      <input name="in4" type="vector3" value="0, 0, 0" />
+      <input name="in5" type="vector3" value="0, 0, 0" />
+    </switch>
+    <sign name="sign1" type="vector3">
+      <input name="in" type="vector3" nodename="switch2" value="0, 0, 0" />
+    </sign>
+    <divide name="divide3" type="vector3">
+      <input name="in1" type="vector3" nodename="switch1" value="0, 0, 0" />
+      <input name="in2" type="float" interfacename="blend_noise_uniformscale" value="1" />
+    </divide>
+    <divide name="divide5" type="vector3">
+      <input name="in2" type="vector3" interfacename="blend_noise_scale" value="1, 1, 1" />
+      <input name="in1" type="vector3" value="1, 1, 1" />
+    </divide>
+    <add name="add4" type="vector3">
+      <input name="in1" type="vector3" interfacename="blend_noise_offset" value="0, 0, 0" />
+      <input name="in2" type="float" nodename="randomfloat2" value="0" />
+    </add>
+    <max name="max2" type="float">
+      <input name="in1" type="float" nodename="max1" value="0" />
+      <input name="in2" type="float" nodename="separate3v3" output="outz" value="0" />
+    </max>
+    <separate3 name="separate3v3" type="multioutput">
+      <input name="in" type="vector3" nodename="absval1" value="0, 0, 0" />
+    </separate3>
+    <position name="pos" type="vector3">
+      <input name="space" type="string" interfacename="coord_space" value="object" />
+    </position>
+    <geompropvalue name="rest" type="vector3">
+      <input name="geomprop" type="string" interfacename="rest_geomprop" value="rest" />
+      <input name="default" type="vector3" value="0, 0, 0" />
+    </geompropvalue>
+    <switch name="switch2" type="vector3">
+      <input name="in1" type="vector3" nodename="normal" value="0, 0, 0" />
+      <input name="in2" type="vector3" nodename="rnml" value="0, 0, 0" />
+      <input name="which" type="integer" interfacename="do_rest" value="0" />
+      <input name="in3" type="vector3" value="0, 0, 0" />
+      <input name="in4" type="vector3" value="0, 0, 0" />
+      <input name="in5" type="vector3" value="0, 0, 0" />
+    </switch>
+    <randomfloat name="randomfloat2" type="float">
+      <input name="seed" type="integer" interfacename="blend_noise_seed" value="0" />
+      <input name="in" type="float" value="0" />
+      <input name="min" type="float" value="10" />
+      <input name="max" type="float" value="10000" />
+    </randomfloat>
+    <max name="max1" type="float">
+      <input name="in1" type="float" nodename="separate3v3" output="outx" value="0" />
+      <input name="in2" type="float" nodename="separate3v3" output="outy" value="0" />
+    </max>
+    <absval name="absval1" type="vector3">
+      <input name="in" type="vector3" nodename="mix9" value="0, 0, 0" />
+    </absval>
+    <normal name="normal" type="vector3">
+      <input name="space" type="string" interfacename="coord_space" value="object" />
+    </normal>
+    <geompropvalue name="rnml" type="vector3">
+      <input name="geomprop" type="string" interfacename="rnml_geomprop" value="rnml" />
+      <input name="default" type="vector3" value="0, 0, 0" />
+    </geompropvalue>
+    <mix name="mix9" type="vector3">
+      <input name="fg" type="vector3" nodename="noise3d1" value="0, 0, 0" />
+      <input name="bg" type="vector3" nodename="switch2" value="0, 0, 0" />
+      <input name="mix" type="float" interfacename="edge_noise_strength" value="0" />
+    </mix>
+    <noise3d name="noise3d1" type="vector3">
+      <input name="position" type="vector3" nodename="add2" value="0, 0, 0" />
+      <input name="amplitude" type="vector3" value="1, 1, 1" />
+      <input name="pivot" type="float" value="0" />
+    </noise3d>
+    <add name="add2" type="vector3">
+      <input name="in1" type="vector3" nodename="add1" value="0, 0, 0" />
+      <input name="in2" type="vector3" interfacename="edge_noise_offset" value="0, 0, 0" />
+    </add>
+    <add name="add1" type="vector3">
+      <input name="in1" type="vector3" nodename="divide1" value="0, 0, 0" />
+      <input name="in2" type="float" nodename="randomfloat1" value="0" />
+    </add>
+    <divide name="divide1" type="vector3">
+      <input name="in1" type="vector3" nodename="divide4" value="0, 0, 0" />
+      <input name="in2" type="vector3" interfacename="edge_noise_scale" value="1, 1, 1" />
+    </divide>
+    <randomfloat name="randomfloat1" type="float">
+      <input name="seed" type="integer" interfacename="edge_noise_seed" value="0" />
+      <input name="in" type="float" value="0" />
+      <input name="min" type="float" value="10" />
+      <input name="max" type="float" value="10000" />
+    </randomfloat>
+    <divide name="divide4" type="vector3">
+      <input name="in1" type="vector3" nodename="switch2" value="0, 0, 0" />
+      <input name="in2" type="float" interfacename="edge_noise_uniformscale" value="1" />
+    </divide>
+  </nodegraph>
+</materialx>

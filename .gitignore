@@ -1,4 +1,7 @@
 # Custom ignores
+backup
+ignore
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

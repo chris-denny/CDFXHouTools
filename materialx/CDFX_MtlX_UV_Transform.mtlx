@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<materialx version="1.38">
+  <!-- Generated in Houdini from /stage/materiallibrary1/Uber_Material_Builder1/shader_kmaMAT/subnet -->
+  <nodedef name="ND_CDFX_MtlX_UV_Transform_vector2" node="CDFX_MtlX_UV_Transform" nodegroup="CDFX">
+    <input name="index" type="integer" uiname="Index" uisoftmin="0" uisoftmax="10" value="0" />
+    <input name="offset" type="vector2" uiname="Offset" value="0, 0" />
+    <input name="scale" type="vector2" uiname="Scale" value="1, 1" />
+    <input name="rotate" type="float" uiname="Rotate" uisoftmin="-180.0" uisoftmax="180.0" value="-0" />
+    <output name="out" type="vector2" />
+  </nodedef>
+  <nodegraph name="NG_CDFX_MtlX_UV_Transform_vector2" nodedef="ND_CDFX_MtlX_UV_Transform_vector2">
+    <multiply name="uv_scale" type="vector2">
+      <input name="in1" type="vector2" nodename="center2" value="0, 0" />
+      <input name="in2" type="vector2" interfacename="scale" value="1, 1" />
+    </multiply>
+    <output name="out" type="vector2" nodename="uv_scale" />
+    <add name="center2" type="vector2">
+      <input name="in1" type="vector2" nodename="uv_rotate" value="0, 0" />
+      <input name="in2" type="vector2" nodename="add1" value="0, 0" />
+    </add>
+    <rotate2d name="uv_rotate" type="vector2">
+      <input name="in" type="vector2" nodename="center1" value="0, 0" />
+      <input name="amount" type="float" nodename="multiply3" value="-0" />
+    </rotate2d>
+    <add name="add1" type="vector2">
+      <input name="in1" type="vector2" interfacename="offset" value="0, 0" />
+      <input name="in2" type="vector2" value="0.5, 0.5" />
+    </add>
+    <add name="center1" type="vector2">
+      <input name="in1" type="vector2" nodename="uv_offset" value="0, 0" />
+      <input name="in2" type="vector2" nodename="multiply2" value="0, 0" />
+    </add>
+    <multiply name="multiply3" type="float">
+      <input name="in1" type="float" interfacename="rotate" value="0" />
+      <input name="in2" type="float" value="-1" />
+    </multiply>
+    <add name="uv_offset" type="vector2">
+      <input name="in1" type="vector2" nodename="uv" value="0, 0" />
+      <input name="in2" type="vector2" interfacename="offset" value="0, 0" />
+    </add>
+    <multiply name="multiply2" type="vector2">
+      <input name="in1" type="vector2" nodename="add1" value="0, 0" />
+      <input name="in2" type="vector2" value="-1, -1" />
+    </multiply>
+    <texcoord name="uv" type="vector2">
+      <input name="index" type="integer" interfacename="index" value="0" />
+    </texcoord>
+  </nodegraph>
+</materialx>

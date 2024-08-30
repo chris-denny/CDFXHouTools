@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<materialx version="1.38">
+  <!-- Generated in Houdini from /stage/materiallibrary1/MtlX_Transform_Jitter_Nodes1 -->
+  <nodedef name="ND_CDFX_MtlX_Transform_Jitter_vector3_vector3_vector3" node="CDFX_MtlX_Transform_Jitter" nodegroup="CDFX">
+    <input name="overall_scale" type="float" uiname="Overall Scale" uisoftmin="0.0" uisoftmax="1.0" value="1" />
+    <input name="scale" type="vector3" uiname="Scale" value="1, 1, 1" />
+    <input name="offset" type="vector3" uiname="Offset" value="0, 0, 0" />
+    <input name="rotate" type="vector3" uiname="Rotate" value="0, 0, 0" />
+    <input name="jitter_attr" type="string" uiname="Attribute" value="mat_jitter_id" />
+    <input name="do_uniform_scale" type="boolean" uiname="Uniform Scale Jitter" value="true" />
+    <input name="uniform_scale_minmax" type="vector2" uiname="Scale Min/Max" value="0, 0" />
+    <input name="scale_min" type="vector3" uiname="Scale Min" value="0, 0, 0" />
+    <input name="scale_max" type="vector3" uiname="Max" value="0, 0, 0" />
+    <input name="scale_seed" type="integer" uiname="Seed" uimin="0" uisoftmax="1000" value="123" />
+    <input name="offset_min" type="vector3" uiname="Offset Min" value="0, 0, 0" />
+    <input name="offset_max" type="vector3" uiname="Max" value="0, 0, 0" />
+    <input name="offset_seed" type="integer" uiname="Seed" uimin="0" uisoftmax="1000" value="234" />
+    <input name="rotate_min" type="vector3" uiname="Rotate Min" value="0, 0, 0" />
+    <input name="rotate_max" type="vector3" uiname="Max" value="0, 0, 0" />
+    <input name="rotate_seed" type="integer" uiname="Seed" uimin="0" uisoftmax="1000" value="456" />
+    <output name="scale_out" type="vector3" />
+    <output name="offset_out" type="vector3" />
+    <output name="rotate_out" type="vector3" />
+  </nodedef>
+  <nodegraph name="NG_CDFX_MtlX_Transform_Jitter_vector3_vector3_vector3"  nodedef="ND_CDFX_MtlX_Transform_Jitter_vector3_vector3_vector3">
+    <input name="overall_scale" type="float" uiname="Overall Scale" uisoftmin="0.0" uisoftmax="1.0" value="1" />
+    <input name="scale" type="vector3" uiname="Scale" value="1, 1, 1" />
+    <input name="offset" type="vector3" uiname="Offset" value="0, 0, 0" />
+    <input name="rotate" type="vector3" uiname="Rotate" value="0, 0, 0" />
+    <input name="jitter_attr" type="string" uiname="Attribute" value="mat_jitter_id" />
+    <input name="do_uniform_scale" type="boolean" uiname="Uniform Scale Jitter" value="true" />
+    <input name="uniform_scale_minmax" type="vector2" uiname="Scale Min/Max" value="0, 0" />
+    <input name="scale_min" type="vector3" uiname="Scale Min" value="0, 0, 0" />
+    <input name="scale_max" type="vector3" uiname="Max" value="0, 0, 0" />
+    <input name="scale_seed" type="integer" uiname="Seed" uimin="0" uisoftmax="1000" value="123" />
+    <input name="offset_min" type="vector3" uiname="Offset Min" value="0, 0, 0" />
+    <input name="offset_max" type="vector3" uiname="Max" value="0, 0, 0" />
+    <input name="offset_seed" type="integer" uiname="Seed" uimin="0" uisoftmax="1000" value="234" />
+    <input name="rotate_min" type="vector3" uiname="Rotate Min" value="0, 0, 0" />
+    <input name="rotate_max" type="vector3" uiname="Max" value="0, 0, 0" />
+    <input name="rotate_seed" type="integer" uiname="Seed" uimin="0" uisoftmax="1000" value="456" />
+    <multiply name="scale_output" type="vector3">
+      <input name="in1" type="vector3" nodename="scale_add" value="0, 0, 0" />
+      <input name="in2" type="vector3" nodename="combine3" value="1, 1, 1" />
+    </multiply>
+    <output name="scale_out" type="vector3" nodename="scale_output" />
+    <add name="offset_output" type="vector3">
+      <input name="in1" type="vector3" interfacename="offset" value="0, 0, 0" />
+      <input name="in2" type="vector3" nodename="offset_range" value="0, 0, 0" />
+    </add>
+    <output name="offset_out" type="vector3" nodename="offset_output" />
+    <add name="rotate_output" type="vector3">
+      <input name="in1" type="vector3" interfacename="rotate" value="0, 0, 0" />
+      <input name="in2" type="vector3" nodename="rotate_range" value="0, 0, 0" />
+    </add>
+    <output name="rotate_out" type="vector3" nodename="rotate_output" />
+    <add name="scale_add" type="vector3">
+      <input name="in1" type="vector3" interfacename="scale" value="0, 0, 0" />
+      <input name="in2" type="vector3" nodename="scale_switch" value="0, 0, 0" />
+    </add>
+    <combine3 name="combine3" type="vector3">
+      <input name="in1" type="float" interfacename="overall_scale" value="0" />
+      <input name="in2" type="float" interfacename="overall_scale" value="0" />
+      <input name="in3" type="float" interfacename="overall_scale" value="0" />
+    </combine3>
+    <range name="offset_range" type="vector3">
+      <input name="in" type="vector3" nodename="offset_convert" value="0, 0, 0" />
+      <input name="outlow" type="vector3" interfacename="offset_min" value="0, 0, 0" />
+      <input name="outhigh" type="vector3" interfacename="offset_max" value="0, 0, 0" />
+      <input name="inlow" type="vector3" value="0, 0, 0" />
+      <input name="inhigh" type="vector3" value="1, 1, 1" />
+      <input name="gamma" type="vector3" value="1, 1, 1" />
+      <input name="doclamp" type="boolean" value="true" />
+    </range>
+    <range name="rotate_range" type="vector3">
+      <input name="in" type="vector3" nodename="rotate_convert" value="0, 0, 0" />
+      <input name="outlow" type="vector3" interfacename="rotate_min" value="0, 0, 0" />
+      <input name="outhigh" type="vector3" interfacename="rotate_max" value="0, 0, 0" />
+      <input name="inlow" type="vector3" value="0, 0, 0" />
+      <input name="inhigh" type="vector3" value="1, 1, 1" />
+      <input name="gamma" type="vector3" value="1, 1, 1" />
+      <input name="doclamp" type="boolean" value="true" />
+    </range>
+    <mix name="scale_switch" type="vector3">
+      <input name="fg" type="vector3" nodename="uniform_scale_combine" value="0, 0, 0" />
+      <input name="bg" type="vector3" nodename="scale_range" value="0, 0, 0" />
+      <input name="mix" type="float" nodename="scale_doswitch" value="0" />
+    </mix>
+    <convert name="offset_convert" type="vector3">
+      <input name="in" type="color3" nodename="offset_random" value="0, 0, 0" />
+    </convert>
+    <convert name="rotate_convert" type="vector3">
+      <input name="in" type="color3" nodename="rotate_random" value="0, 0, 0" />
+    </convert>
+    <combine3 name="uniform_scale_combine" type="vector3">
+      <input name="in1" type="float" nodename="uniform_scale_random" value="0" />
+      <input name="in2" type="float" nodename="uniform_scale_random" value="0" />
+      <input name="in3" type="float" nodename="uniform_scale_random" value="0" />
+    </combine3>
+    <range name="scale_range" type="vector3">
+      <input name="in" type="vector3" nodename="scale_convert" value="0, 0, 0" />
+      <input name="outlow" type="vector3" interfacename="scale_min" value="0, 0, 0" />
+      <input name="outhigh" type="vector3" interfacename="scale_max" value="0, 0, 0" />
+      <input name="inlow" type="vector3" value="0, 0, 0" />
+      <input name="inhigh" type="vector3" value="1, 1, 1" />
+      <input name="gamma" type="vector3" value="1, 1, 1" />
+      <input name="doclamp" type="boolean" value="true" />
+    </range>
+    <convert name="scale_doswitch" type="float">
+      <input name="in" type="boolean" interfacename="do_uniform_scale" value="false" />
+    </convert>
+    <randomcolor name="offset_random" type="color3">
+      <input name="in" type="integer" nodename="geompropvalue" value="0" />
+      <input name="seed" type="integer" interfacename="offset_seed" value="0" />
+      <input name="huelow" type="float" value="0" />
+      <input name="huehigh" type="float" value="1" />
+      <input name="saturationlow" type="float" value="0" />
+      <input name="saturationhigh" type="float" value="1" />
+      <input name="brightnesslow" type="float" value="0" />
+      <input name="brightnesshigh" type="float" value="1" />
+    </randomcolor>
+    <randomcolor name="rotate_random" type="color3">
+      <input name="in" type="integer" nodename="geompropvalue" value="0" />
+      <input name="seed" type="integer" interfacename="rotate_seed" value="0" />
+      <input name="huelow" type="float" value="0" />
+      <input name="huehigh" type="float" value="1" />
+      <input name="saturationlow" type="float" value="0" />
+      <input name="saturationhigh" type="float" value="1" />
+      <input name="brightnesslow" type="float" value="0" />
+      <input name="brightnesshigh" type="float" value="1" />
+    </randomcolor>
+    <randomfloat name="uniform_scale_random" type="float">
+      <input name="in" type="integer" nodename="geompropvalue" value="0" />
+      <input name="min" type="float" nodename="uniform_scale_range" output="outx" value="0" />
+      <input name="max" type="float" nodename="uniform_scale_range" output="outy" value="0" />
+      <input name="seed" type="integer" interfacename="scale_seed" value="0" />
+    </randomfloat>
+    <convert name="scale_convert" type="vector3">
+      <input name="in" type="color3" nodename="scale_random" value="0, 0, 0" />
+    </convert>
+    <geompropvalue name="geompropvalue" type="integer">
+      <input name="geomprop" type="string" interfacename="jitter_attr" value="mat_jitter_id" />
+      <input name="default" type="integer" value="0" />
+    </geompropvalue>
+    <separate2 name="uniform_scale_range" type="multioutput">
+      <input name="in" type="vector2" interfacename="uniform_scale_minmax" value="0, 0" />
+    </separate2>
+    <randomcolor name="scale_random" type="color3">
+      <input name="in" type="integer" nodename="geompropvalue" value="0" />
+      <input name="seed" type="integer" interfacename="scale_seed" value="0" />
+      <input name="huelow" type="float" value="0" />
+      <input name="huehigh" type="float" value="1" />
+      <input name="saturationlow" type="float" value="0" />
+      <input name="saturationhigh" type="float" value="1" />
+      <input name="brightnesslow" type="float" value="0" />
+      <input name="brightnesshigh" type="float" value="1" />
+    </randomcolor>
+  </nodegraph>
+</materialx>

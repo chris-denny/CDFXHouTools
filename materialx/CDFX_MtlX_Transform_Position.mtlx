@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<materialx version="1.38">
+  <!-- Generated in Houdini from /mat/Uber_Material_Builder1/MtlX_Transform_Position_Nodes1 -->
+  <nodedef name="ND_CDFX_MtlX_Transform_Position_vector3" node="CDFX_MtlX_Transform_Position" nodegroup="CDFX">
+    <input name="space" type="string" uiname="Space" value="object" />
+    <input name="do_rest" type="boolean" uiname="Use Rest" value="false" />
+    <input name="rest_attr" type="string" uiname="Rest Attribute" value="rest" />
+    <input name="scale" type="vector3" uiname="Scale" value="1, 1, 1" />
+    <input name="rotate" type="vector3" uiname="Rotate" value="0, 0, 0" />
+    <input name="offset" type="vector3" uiname="Offset" value="0, 0, 0" />
+    <output name="out" type="vector3" nodename="offset2" />
+  </nodedef>
+  <nodegraph name="NG_CDFX_MtlX_Transform_Position_vector3" nodedef="ND_CDFX_MtlX_Transform_Position_vector3">
+    <input name="space" type="string" uiname="Space" value="object" />
+    <input name="do_rest" type="boolean" uiname="Use Rest" value="false" />
+    <input name="rest_attr" type="string" uiname="Rest Attribute" value="rest" />
+    <input name="scale" type="vector3" uiname="Scale" value="1, 1, 1" />
+    <input name="rotate" type="vector3" uiname="Rotate" value="0, 0, 0" />
+    <input name="offset" type="vector3" uiname="Offset" value="0, 0, 0" />
+    <add name="offset2" type="vector3">
+      <input name="in1" type="vector3" nodename="rotatez" value="0, 0, 0" />
+      <input name="in2" type="vector3" interfacename="offset" value="0, 0, 0" />
+    </add>
+    <output name="out" type="vector3" nodename="offset2" />
+    <rotate3d name="rotatez" type="vector3">
+      <input name="in" type="vector3" nodename="rotatey" value="0, 0, 0" />
+      <input name="amount" type="float" nodename="separate3v1" output="outz" value="0" />
+      <input name="axis" type="vector3" value="0, 0, 1" />
+    </rotate3d>
+    <rotate3d name="rotatey" type="vector3">
+      <input name="in" type="vector3" nodename="rotatex" value="0, 0, 0" />
+      <input name="amount" type="float" nodename="separate3v1" output="outy" value="0" />
+      <input name="axis" type="vector3" value="0, 1, 0" />
+    </rotate3d>
+    <separate3 name="separate3v1" type="multioutput">
+      <input name="in" type="vector3" interfacename="rotate" value="0, 0, 0" />
+    </separate3>
+    <rotate3d name="rotatex" type="vector3">
+      <input name="in" type="vector3" nodename="scale2" value="0, 0, 0" />
+      <input name="amount" type="float" nodename="separate3v1" output="outx" value="0" />
+      <input name="axis" type="vector3" value="1, 0, 0" />
+    </rotate3d>
+    <multiply name="scale2" type="vector3">
+      <input name="in1" type="vector3" nodename="mix1" value="0, 0, 0" />
+      <input name="in2" type="vector3" interfacename="scale" value="1, 1, 1" />
+    </multiply>
+    <mix name="mix1" type="vector3">
+      <input name="fg" type="vector3" nodename="rest" value="0, 0, 0" />
+      <input name="bg" type="vector3" nodename="pos" value="0, 0, 0" />
+      <input name="mix" type="float" nodename="convert1" value="1" />
+    </mix>
+    <geompropvalue name="rest" type="vector3">
+      <input name="geomprop" type="string" interfacename="rest_attr" value="rest" />
+      <input name="default" type="vector3" value="0, 0, 0" />
+    </geompropvalue>
+    <position name="pos" type="vector3">
+      <input name="space" type="string" interfacename="space" value="model" />
+    </position>
+    <convert name="convert1" type="float">
+      <input name="in" type="boolean" interfacename="do_rest" value="false" />
+    </convert>
+  </nodegraph>
+</materialx>

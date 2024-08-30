@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
+  <toolshelf name="CDFXHouTools" label="CDFXHouTools">
+    <memberTool name="recreate_nodes"/>
+    <memberTool name="list_node_in_out"/>
+    <memberTool name="zip_backups"/>
+  </toolshelf>
+
+  <tool name="recreate_nodes" label="Recreate Nodes" icon="BUTTONS_redo">
+    <script scriptType="python"><![CDATA[import hou
+from importlib import reload
+from CDFX.utils import recreate_self_shelf
+reload(recreate_self_shelf)
+
+recreate_self_shelf.run_recreate_self_shelf()
+]]></script>
+  </tool>
+
+  <tool name="list_node_in_out" label="List Node Inputs and Outputs" icon="DATATYPES_node_list">
+    <script scriptType="python"><![CDATA[import hou
+
+def print_node_connections():
+    # Get the currently selected node
+    selected_nodes = hou.selectedNodes()
+
+    if not selected_nodes:
+        print(f"\nNo node selected.")
+        return
+
+    node = selected_nodes[0]
+    
+    print(f"\nConnections for node '{node.name()}':")
+    
+    input_names = node.inputNames()
+    output_names = node.outputNames()
+    
+    # Print inputs
+    if input_names:
+        print("  Inputs:")
+        for name in input_names:
+            print(f"    {name}: {node.inputIndex(name)}")
+    else:
+        print("  No inputs.")
+    
+    # Print outputs
+    if output_names:
+        print("  Outputs:")
+        for name in output_names:
+            print(f"    {name}: {node.outputIndex(name)}")
+    else:
+        print("  No outputs.")
+
+# Run the function
+print_node_connections()]]></script>
+  </tool>
+
+  <tool name="zip_backups" label="Zip Backups" icon="TOP_filecompress">
+    <script scriptType="python"><![CDATA[import hou
+from importlib import reload
+from CDFX.utils import recursive_zip_shelf
+reload(recursive_zip_shelf)
+
+recursive_zip_shelf.show_recursive_zip_ui()
+]]></script>
+  </tool>
+</shelfDocument>
