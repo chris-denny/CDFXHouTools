@@ -1,0 +1,47 @@
+// Created by Chris Denny for Redshift
+// This file is licensed under GPLv3
+
+shader TransformJitter
+[[  string help = "Randomizes Scale, Offset, and Rotation using UserData",
+    string label = "Transform Jitter" ]]
+(
+    int UserData = 0 [[string page = "Input"]],
+    int global_seed = 1 [[string label = "Global Seed", int min = 0, int max = 100, string page = "Input"]],
+
+    // Uniform Scale Values
+    float uniform_scale_min = 0.0 [[string label = "Uniform Scale Min", float min = 0, float max = 1, string page = "Scale Jitter"]],
+    float uniform_scale_max = 0.0 [[string label = "Uniform Scale Max", float min = 0, float max = 1, string page = "Scale Jitter"]],
+
+    // Scale Values
+    vector scale_min = 0.0 [[string label = "Scale Min", vector min = 0, vector max = 1, string page = "Scale Jitter"]],
+    vector scale_max = 0.0 [[string label = "Scale Max", vector min = 0, vector max = 1, string page = "Scale Jitter"]],
+    int scale_seed = 123 [[string label = "Scale Seed", int min = 0, int max = 1000, string page = "Scale Jitter"]],
+
+    // Offset Values
+    vector offset_min = 0.0 [[string label = "Offset Min", vector min = 0, vector max = 1, string page = "Offset Jitter"]],
+    vector offset_max = 0.0 [[string label = "Offset Max", vector min = 0, vector max = 1, string page = "Offset Jitter"]],
+    int offset_seed = 234 [[string label = "Offset Seed", int min = 0, int max = 1000, string page = "Offset Jitter"]],
+
+    // Rotation Values
+    vector rotation_min = 0.0 [[string label = "Rotation Min", vector min = -180, vector max = 180, string page = "Rotation Jitter"]],
+    vector rotation_max = 0.0 [[string label = "Rotation Max", vector min = -180, vector max = 180, string page = "Rotation Jitter"]],
+    int rotation_seed = 456 [[string label = "Rotation Seed", int min = 0, int max = 1000, string page = "Rotation Jitter"]],
+
+    // Define Outputs
+    output float uniform_scale = 0.0,
+    output vector scale = 0.0,
+    output vector offset = 0.0,
+    output vector rotation = 0.0,
+)
+{
+    // Noise
+    float scale_noise = noise("cell", vector(abs(UserData), abs(scale_seed), abs(global_seed)+12));  
+    float offset_noise = noise("cell", vector(abs(UserData), abs(offset_seed), abs(global_seed)+23));
+    float rotation_noise = noise("cell", vector(abs(UserData), abs(rotation_seed), abs(global_seed)+34));
+
+    // Outputs
+    uniform_scale = mix(uniform_scale_min, uniform_scale_max, scale_noise);
+    scale = mix(scale_min, scale_max, scale_noise);
+    offset = mix(offset_min, offset_max, offset_noise);
+    rotation = mix(rotation_min, rotation_max, rotation_noise);
+}
