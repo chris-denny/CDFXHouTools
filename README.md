@@ -110,7 +110,7 @@ Manipulate the scale, rotation, and translation of the incoming geometry, in tha
 
 ### MtlX Triplanar
 Context: *VOP*\
-A custom triplanar implementation that enables proper xyz-axis specific rotations, edge and blend noise, and axis-mirroring fixes to match other common triplanar methods. Outputs includes UVs and weights for use with the MtlX Triplanar Textures node.
+A custom triplanar implementation that enables proper xyz-axis specific rotations, edge and blend noise, and axis-mirroring fixes to match other common triplanar methods. Outputs include UVs and weights for use with the MtlX Triplanar Textures node.
 
 ### MtlX Triplanar Textures
 Context: *VOP*\
