@@ -53,7 +53,7 @@ The Uber Material Builder streamlines the material creation process, allowing ar
    Delete unconnected nodes by mistake? Want to version up the HDA? The "Recreate Self" feature will transfer over all of your changes to a new node so you can continue with all of the original options restored. Any custom child nodes with "keep" in the name are copied over and are connected.
 
 ### Notes:
-- Render engine specific versions are included, use the Karma variant if you don't have Redshift. Parameters for both may be 
+- Render engine specific versions are included, use the Karma variant if you don't have Redshift.
 - I recommended you set "REDSHIFT_DISABLE_AUTOTEXTURESCOLORSPACE" to "1" via either houdini.env or packages to prevent Redshift from changing the color space on rs texture nodes.
 - For Redshift, the OSL implementation of triplanar and hex-tiled triplanar adds 20-30s of compile time at the start of each new 'session'. Because of this, by default the uber material uses the default Redshift triplanar node. When set to hex-tiled triplanar, using OSL is forced.
 ___
