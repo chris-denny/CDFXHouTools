@@ -1,5 +1,5 @@
 # CDFXHouTools
-A growing collection of python scripts, shelf tools, and HDA's to make work easier.
+A growing collection of python scripts, shelf tools, and HDAs designed to streamline and enhance the workflow for Houdini artists.
 
 HDA's are in the Houdini Indie (.hdalc) format.
 
@@ -19,7 +19,7 @@ The packages folder location is dependent on your OS. See SideFX documentation [
 
 #### Compatibility
 These tools have been created with cross-platform capability in mind, if you experience any issues please let me know.
-Tested with Houdini 20.0 and 20.5
+Tested with Houdini 20.0 and 20.5.
 ___
 
 ## CDFX Uber Material Builder
