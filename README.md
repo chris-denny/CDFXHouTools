@@ -1,7 +1,7 @@
 # CDFXHouTools
 A growing collection of python scripts, shelf tools, and HDAs designed to streamline and enhance the workflow for Houdini artists.
 
-HDA's are in the Houdini Indie (.hdalc) format.
+HDAs are in the Houdini Indie (.hdalc) format.
 
 Have you found this useful? *Feel free to [buy me a coffee](https://buymeacoffee.com/chrisdenny)!*
 ___
@@ -58,7 +58,7 @@ The Uber Material Builder streamlines the material creation process, allowing ar
 - For Redshift, the OSL implementation of triplanar and hex-tiled triplanar adds 20-30s of compile time at the start of each new 'session'. Because of this, by default the uber material uses the default Redshift triplanar node. When set to hex-tiled triplanar, using OSL is forced.
 ___
 
-## HDA's
+## HDAs
 Accessible via the "CDFX" tab menu.
 
 ### Boolean Advanced
@@ -98,7 +98,7 @@ Context: *SOP*\
 Creates unique `path` and `name` attributes on primitives based on a connectivity attribute. This ensures no duplicate paths or names, which often occurs when working with CAD models. "Cusp" further splits geometry apart; I often use names like `splitPath` and `splitName` to differentiate these. This is handy for material assignment, as a single CAD part may have different surfaces and finishes. The process is multi-threaded so it remains as fast as possible, even on objects that have tens of thousands of pieces.
 
 ## MaterialX Nodes
-In order to reduce the number of node descendents in Solaris, the following single-node MaterialX HDA's have been created. To view their original internal structure, use the "Nodes" variant found in the "Nodes" submenu.
+In order to reduce the number of node descendents in Solaris, the following single-node MaterialX HDAs have been created. To view their original internal structure, use the "Nodes" variant found in the "Nodes" submenu.
 
 ### MtlX Transform Jitter
 Context: *VOP*\
