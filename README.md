@@ -1,5 +1,5 @@
 # CDFXHouTools
-A growing collection of python scripts, shelf tools, and HDAs designed to streamline and enhance the workflow for Houdini artists.
+A growing collection of python scripts, shelf tools, and HDAs designed to streamline and enhance workflows for Houdini artists.
 
 HDAs are in the Houdini Indie (.hdalc) format.
 
