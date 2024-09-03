@@ -138,46 +138,8 @@ class NodeRecreator:
                         new_parm.setFromParm(parm)
                         self.log(f"Parameter '{parm.name()}' created and set on the new node. Value is {parm.eval()}.")
                         
-                        # Check the parameter name, and if it matches certain names, copy the value over to the parameter name
-                        # Only used for versioning 1.10 to 1.11
-                        # new_parm_val = new_parm.eval()
-                        # if new_parm_val != 0 or new_parm_val != 1:
-                        #     match new_parm.name():
-                        #         case "detail_a_inmin":
-                        #             self.new_node.parm("detail_a_remap1pos").set(new_parm_val)
-                        #             self.log(
-                        #                 f"Parameter '{parm.name()}' copied to 'detail_a_remap1pos'"
-                        #             )
-                        #         case "detail_a_inmax":
-                        #             self.new_node.parm("detail_a_remap2pos").set(new_parm_val)
-                        #             self.log(f"Parameter '{parm.name()}' copied to 'detail_a_remap2pos'")
-                        #         case "detail_b_inmin":
-                        #             self.new_node.parm("detail_b_remap1pos").set(new_parm_val)
-                        #             self.log(f"Parameter '{parm.name()}' copied to 'detail_b_remap1pos'")
-                        #         case "detail_b_inmax":
-                        #             self.new_node.parm("detail_b_remap2pos").set(new_parm_val)
-                        #             self.log(f"Parameter '{parm.name()}' copied to 'detail_b_remap2pos'")
-                        #         case "detail_c_inmin":
-                        #             self.new_node.parm("detail_c_remap1pos").set(new_parm_val)
-                        #             self.log(f"Parameter '{parm.name()}' copied to 'detail_c_remap1pos'")
-                        #         case "detail_c_inmax":
-                        #             self.new_node.parm("detail_c_remap2pos").set(new_parm_val)
-                        #             self.log(f"Parameter '{parm.name()}' copied to 'detail_c_remap2pos'")
-
-                        # # Only used for versioning 1.11 to 1.12
-                        # new_parm_val = new_parm.eval()
-                        # match new_parm.name():
-                        #     case "detail_a_noise_coord_scale_global":
-                        #         self.new_node.parm("detail_a_tri_overall_scale").set(new_parm_val)
-                        #         self.log(f"Parameter '{parm.name()}' copied to 'detail_a_tri_overall_scale'")
-                        #     case "detail_b_noise_coord_scale_global":
-                        #         self.new_node.parm("detail_b_tri_overall_scale").set(new_parm_val)
-                        #         self.log(f"Parameter '{parm.name()}' copied to 'detail_b_tri_overall_scale'")
-                        #     case "detail_c_noise_coord_scale_global":
-                        #         self.new_node.parm("detail_c_tri_overall_scale").set(new_parm_val)
-                        #         self.log(f"Parameter '{parm.name()}' copied to 'detail_c_tri_overall_scale'")
                     else:
-                        self.log(f"Parameter '{parm.name()}' is a folder, skipping.")
+                        self.log(f"Parameter '{parm.name()}' is a folder or separator, skipping.")
                     
                 except AttributeError:
                     self.log(f"Failed to create and set parameter '{parm.name()}'")
@@ -188,20 +150,13 @@ class NodeRecreator:
         # Check that all parameters match
         for parm in [parm for parm in self.node.parms() if not parm.isAtDefault(compare_expressions=True) or not self.use_new_parm_defaults]:
             if parm.name() not in excluded_parms:
-                new_parm = self.new_node.parm(parm.name())
-                if new_parm and new_parm.rawValue() != parm.rawValue():
-                    print(f"Warning: Parameter {parm.name()} does not match")
-                    self.success = 0
-        # # Temporary uniform scale for textures, added in version 1.12
-        # for property in ["detail_a_tri", "detail_b_tri", "detail_c_tri", "textures_tri"]:
-        #     scale = (self.new_node.parm(f"{property}_scale1").eval(),
-        #              self.new_node.parm(f"{property}_scale2").eval(),
-        #              self.new_node.parm(f"{property}_scale3").eval())
-        #     if scale[0] == scale[1] == scale[2] and scale[0] != 0:
-        #         self.new_node.parm(f"{property}_overall_scale").set(scale[0])
-        #         self.new_node.parm(f"{property}_scale1").set(1.0)
-        #         self.new_node.parm(f"{property}_scale2").set(1.0)
-        #         self.new_node.parm(f"{property}_scale3").set(1.0)
+                if str(parm.parmTemplate().type()) not in ["parmTemplateType.FolderSet",
+                                                           "parmTemplateType.Folder",
+                                                           "parmTemplateType.Separator"]:
+                    new_parm = self.new_node.parm(parm.name())
+                    if new_parm and new_parm.rawValue() != parm.rawValue():
+                        print(f"Warning: Parameter {parm.name()} does not match")
+                        self.success = 0
 
     def recreate(self):
         # Create a new node of the same type

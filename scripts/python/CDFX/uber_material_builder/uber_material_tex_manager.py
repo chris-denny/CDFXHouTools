@@ -72,7 +72,10 @@ class TexManager:
             filtered_parts.append(part)
 
         # Create the dynamic pattern from filtered parts
-        dynamic_pattern = r"".join([rf"({re.escape(part)})[\W_]*" for part in filtered_parts])
+        if filtered_parts:
+            dynamic_pattern = r"".join([rf"({re.escape(part)})[\W_]*" for part in filtered_parts])
+        else:
+            dynamic_pattern = r""
 
         # Remove \b for file matching
         tex_type_group = r"|".join(
@@ -99,7 +102,7 @@ class TexManager:
 
         def process_texture(name, is_file=True):
             match = pattern.search(name)
-            if match:
+            if match or not filtered_parts:
                 tex_type = next(
                     (tex_type for tex_type in self.tex_type_patterns.keys() if match.group(tex_type)),
                     None
@@ -122,7 +125,7 @@ class TexManager:
                     self.log(f"  Double-checking... Success! File exists: {file_path}")
                 else:
                     file_ext = None
-                    file_path = f"{file_path}')`"
+                    file_path = f"{file_path}" if not file_path.startswith("op:`op") else f"{file_path}')`"
 
                 # Check if this file_path has already been processed
                 if file_path in processed_files:
@@ -146,7 +149,7 @@ class TexManager:
                 for child in node.parent().children():
                     process_texture(child.name(), is_file=False)
             else:
-                print(f"Warning! Node not found: {self.source_file_unexpanded_string}")
+                print(f"Warning! Node not found: {self.source_file_string}")
 
         self.related_textures = related_files
 
