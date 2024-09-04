@@ -30,7 +30,7 @@ The Uber Material Builder streamlines the material creation process, allowing ar
 - **Unified UI**\
    Everything needed to control the look of the shader is top-level, making changes faster and exposes properties for better readability.
 - **Automated Texture Manager**\
-   By selecting a single reference file, all matching files are found and applied to their appropriate PBR property. Expressions and env variables are retained in the directory path. The "op:\`opfullpath('/img/copnet/texture')\`" method is supported. A `<UDIM>` token is added if 4 digits are found at the end of the filename. Image sequences are not supported. Preferences for file types and resolution (if a resolution is not found in the reference file), and preferred keywords can be customized via the `tex_manager_config.py` file.
+   By selecting a single reference file, all matching files are found and applied to their appropriate PBR property. Expressions and env variables are retained in the directory path. The "op:" method is supported. A `<UDIM>` token is added if 4 digits are found at the end of the filename. Image sequences are not currently supported. Preferences for file types and resolution (if a resolution is not found in the reference file), and preferred keywords can be customized via the `tex_manager_config.py` file.
 - **Solo Shader Output**\
    Specify singular properties to output to the shader, allowing for easy debugging. Think your roughness isn't quite right? Just solo it like those C4D folks!
 - **Easy Imperfection and Detail Creation**\
@@ -53,6 +53,7 @@ The Uber Material Builder streamlines the material creation process, allowing ar
    Delete unconnected nodes by mistake? Want to version up the HDA? The "Recreate Self" feature will transfer over all of your changes to a new node so you can continue with all of the original options restored. Any custom child nodes with "keep" in the name are copied over and are connected.
 
 ### Notes:
+- For brief information and notes, there is a WIP help page accessible via the "Click for Help" icon.
 - Render engine specific versions are included, use the Karma variant if you don't have Redshift.
 - I recommended you set "REDSHIFT_DISABLE_AUTOTEXTURESCOLORSPACE" to "1" via either houdini.env or packages to prevent Redshift from changing the color space on rs texture nodes.
 - For Redshift, the OSL implementation of triplanar and hex-tiled triplanar adds 20-30s of compile time at the start of each new 'session'. Because of this, by default the uber material uses the default Redshift triplanar node. When set to hex-tiled triplanar, using OSL is forced.

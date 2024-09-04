@@ -1,0 +1,7 @@
+= CDFX | Uber Material Builder Karma =
+
+This node is simply a cut-down version of the primary Uber Material Builder.
+For documentation visit the below link.
+
+@related
+* [Node:vop/CDFX--Uber_Material_Builder]

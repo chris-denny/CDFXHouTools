@@ -1,0 +1,122 @@
+= CDFX | Uber Material Builder =
+
+"""The Uber Material Builder streamlines the material creation process,
+allowing artists to quickly prototype and iterate on complex shader designs
+while maintaining flexibility and control over the final result."""
+
+== Features ==
+
+* *Dynamic node connections, avoiding calls to unused nodes at render time*
+
+    The shader network is initially created with various texturing and mapping options,
+    but only the selection is wired via scripting. Once shader look-dev is finished,
+    unconnected nodes can be destroyed to reduce clutter and minimize the project's file size.
+
+* *Unified UI*
+
+    Everything needed to control the look of the shader is top-level, making changes
+    faster and exposes properties for better readability.
+
+* *Automated Texture Manager*
+
+    By selecting a single reference file, all matching files are found and applied to
+    their appropriate PBR property. Expressions and env variables are retained in the directory path.
+    The "op:" method is supported. A <UDIM> token is added if 4 digits are found at the end of the filename.
+    Image sequences are not supported. Preferences for file types and resolution (if a resolution is not found in the reference file),
+    and preferred keywords can be customized via the tex_manager_config.py file.
+
+* *Solo Shader Output*
+
+    Specify singular properties to output to the shader, allowing for easy debugging.
+    Think your roughness isn't quite right? Just solo it like those C4D folks!
+
+* *Easy Imperfection and Detail Creation*
+
+    Add and stack imperfection and detail maps to improve the materials realism,
+    with individual controls for each material property. Controls are top-level so iteration is fast.
+
+* *UV Mapping, Triplanar, Hex-Tiling, Hex-Tiled Triplanar*
+
+    Use a variety of mapping techniques, each with transform controls.
+
+* *Transform Jitter*
+
+    When using a triplanar mapping method, add randomization to scale, offset, or rotation based on a point or vertex attribute.
+
+* *Simultaneous Redshift and Karma Creation*
+
+    Redshift and Karma networks are modified simulatenously and are wired into a Collect node,
+    allowing you to switch between rendering with Redshift or Karma on the fly;
+    there's no need to change the material assignment. While it's not a perfect 1:1 match between the two,
+    it's close enough to experiment with and reduces conversion time if you change render engines.
+
+* *Support for both ROP and Solaris context for Redshift*
+
+* *(Mostly) Compatible with Redshift RT*
+
+    Because the shader network only wires nodes that are needed, most materials work fine in RT mode.
+
+* *OpenGL and USD Previews*
+
+    OpenGL tags are linked to the materials attributes, and a USD preview surface shader
+    is simultaneously built to enable more accurate viewport previews in both OBJ and Solaris contexts.
+    Vulkan experimentation will occur in the future.
+
+* *Built-in Linear and sRGB Color Space Converter*
+
+* *Future Expandability*
+
+    The core logic and configuration was built to be easy to expand and change.
+    Adding additional render engines or texturing methods is straight-forward.
+
+* *Recreate Self*
+
+    Delete unconnected nodes by mistake? Want to version up the HDA?
+    The "Recreate Self" feature will transfer over all of your changes to a new node so you can continue
+    with all of the original options restored. Any custom child nodes with "keep" in the name are copied over and are connected.
+
+== Base Properties ==
+Method ||
+    Description ||
+*Color/Float* |
+    Set property to a color or float value.
+*Attribute* |
+    Set property to use an attribute value from input geo.
+*Texture* |
+    Set property to use a texture. Texture controls are in the "Textures" tab.
+*Custom* |
+    Set property to bypass automatic wiring.
+    * Allows custom input into the properties respective "_OUT" node, such as "albedo_OUT".
+
+== Settings ==
+=== Create Utility AOVs ===
+Connects AOVs prefixed with "mat_" that provide direct outputs of the material properties, as well as several utility AOVs.
+
+These AOVs are designed for diagnosing properties and troubleshooting issues, rather than for compositing a final beauty pass. Disabling for final renders is recommended.
+:note: To access the AOVs when using Karma, the material assignment must be set to the child "shader_kmaMAT" node, not the top level "Uber_Material_Builder" node. This is being investigated, but may be unavoidable.
+:note: When enabled and mat_weights remains wired, Redshift uses OSL nodes which may slow down render time.
+
+AOV ||
+    Description ||
+mat_$property |
+    Direct outputs of the following properties:
+    albedo, reflection, transmission, mscolor, msradius, sheen, emcolor, opacity, displacement.
+mat_rcrm |
+    Packed Channels:
+    * RGB Order: Roughness, Coat Roughness, and Metalness.
+mat_detail |
+    Packed Channels:
+    * RGB Order: Detail, Bump Detail, Displacement Detail.
+    * These are output before any property-specific remapping is applied.
+mat_weights |
+    Packed Channels:
+    * RGB Order: Hex-tile Cell Weight, Triplanar Hex-tile Cell Weight, Triplanar Edge Weight
+User-Created AOVs |
+    User-created AOVs can be added without breaking the automatic wiring by ensuring the following:
+    * Any Karma AOV nodes prefixed with "mat_" will automatically be connected and disconnected to "MATERIAL".
+    * The Redshift node labeled "AOVOUT" must remain as the last AOV node in the chain.
+
+=== Recreate Self ===
+Creates a new node, copies all parameters over, and destroys self if enabled.
+:warning:CUSTOM CONTENTS WITHOUT "keep" or "KEEP" IN THE NODE NAME WILL BE ERASED.
+:note:Spare parameters are copied over, but their organization and folder structures are not. I have not found an efficient method of doing this.
