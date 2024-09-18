@@ -1,7 +1,7 @@
 # CDFXHouTools
 A growing collection of python scripts, shelf tools, and HDAs designed to streamline and enhance workflows for Houdini artists.
 
-HDAs are in the Houdini Indie (.hdalc) format.
+HDAs are in the Houdini Indie (.hdalc) format. SideFX Labs should be installed as several HDAs utilize them internally.
 
 Have you found this useful? *Feel free to [buy me a coffee](https://buymeacoffee.com/chrisdenny)!*
 ___
