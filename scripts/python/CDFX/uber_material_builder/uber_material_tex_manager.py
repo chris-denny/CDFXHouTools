@@ -6,6 +6,7 @@ from CDFX.uber_material_builder.tex_manager_config import (
     extension_order,
     resolution_order,
     preferred_keywords,
+    excluded_keywords,
 )
 
 
@@ -26,11 +27,9 @@ class TexManager:
         self.node = node
         self.print_diagnostics = self.node.parm("print_diagnostics").eval() == 1
         self.source_file = self.node.parm("tex_mngr_source")
-        self.source_file_string = self.source_file.evalAsString()
-        self.source_file_unexpanded_string = self.source_file.unexpandedString()
+        self.source_file_string = self.source_file.evalAsString().replace("\\", "/")
+        self.source_file_unexpanded_string = self.source_file.unexpandedString().replace("\\", "/")
         self.source_file_unexpanded_directory = self.source_file_unexpanded_string.rsplit("/", 1)[0]
-        if not self.source_file_unexpanded_directory:
-            self.source_file_unexpanded_directory = self.source_file_unexpanded_string.rsplit("\\", 1)[0]
         try:
             self.source_file_expression = self.source_file.expression()
         except hou.OperationFailed:
@@ -100,9 +99,11 @@ class TexManager:
         self.log(f"-" * 20)
         self.log(f"Related Textures:")
 
-        def process_texture(name, is_file=True):
-            match = pattern.search(name)
+        def process_texture(file_name, is_file=True):
+            match = pattern.search(file_name)
             if match or not filtered_parts:
+                file_path = f"{self.source_file_unexpanded_directory}/{file_name}"
+
                 tex_type = next(
                     (tex_type for tex_type in self.tex_type_patterns.keys() if match.group(tex_type)),
                     None
@@ -110,23 +111,29 @@ class TexManager:
                 if tex_type is None:
                     return
 
-                resolution_match = resolution_pattern_compiled.search(name)
+                # Excluded keyword sorting
+                for keyword in excluded_keywords.get(tex_type, []):
+                    if keyword.lower() in file_name.lower():
+                        self.log(f"  Excluding: {file_path} because it contains the excluded word '{keyword}'")
+                        return
+                    
+                resolution_match = resolution_pattern_compiled.search(file_name)
                 resolution = resolution_match.group(1) if resolution_match else None
-
-                file_name = re.sub(self.udim_pattern, "<UDIM>", str(name))
-                file_path = f"{self.source_file_unexpanded_directory}/{file_name}"
-
+                
                 if is_file:
-                    file_ext = Path(name).suffix
+                    file_ext = Path(file_name).suffix
                     # Double-check if the file exists
                     if not Path(hou.expandString(file_path)).exists():
                         self.log(f"  Double-checking... Warning! File does not exist: {file_path}")
                         return
                     self.log(f"  Double-checking... Success! File exists: {file_path}")
+                    # Replace <UDIM> after checking existence
+                    file_name = re.sub(self.udim_pattern, "<UDIM>", file_name)
+                    file_path = f"{self.source_file_unexpanded_directory}/{file_name}"
                 else:
                     file_ext = None
                     file_path = f"{file_path}" if not file_path.startswith("op:`op") else f"{file_path}')`"
-
+                    
                 # Check if this file_path has already been processed
                 if file_path in processed_files:
                     return
@@ -188,9 +195,10 @@ class TexManager:
             keyword in texture.file_path.lower() for keyword in preferred_keywords.get(tex_type, [])
         )
         self.log(
-            f"  File Path: {texture.file_path}, Resolution Score: {resolution_score}, Extension Score: {extension_score}, Preferred Keyword: {has_preferred_keyword}"
+            f"  File Path: {texture.file_path}, Preferred Keyword: {has_preferred_keyword}, Resolution Score: {resolution_score}, Extension Score: {extension_score}"
         )
-        return (-resolution_score, -extension_score, has_preferred_keyword)
+        # Sorting order select_best_texture
+        return (has_preferred_keyword, -resolution_score, -extension_score)
 
     def select_best_texture(self, tex_type):
         if tex_type not in self.related_textures:

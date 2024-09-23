@@ -73,24 +73,24 @@ class NodeConnector:
     
     def check_node(self, node_name, node_type):
         """Checks if a node exists in the Houdini scene."""
-        self.log(f"  Checking for {node_type} node: {node_name}")
+        base_message = f"  Checking for {node_type} node: {node_name}"
         
         if node_name is None:
-            self.log(f"    Skipping check for because node name is 'None'.")
+            self.log(f"{base_message} - Skipping check because node name is 'None'.")
             return True
         
         # Check if it exists
         test_item = self.child_node.item(node_name)
         if test_item is not None:
             if isinstance(test_item, hou.NetworkDot):
-                self.log(f"    Network dot found for {node_type} node: {node_name}")
+                self.log(f"{base_message} - Network dot found.")
                 return True
             elif isinstance(test_item, hou.Node):
-                self.log(f"    Node found for {node_type} node: {node_name}")
+                self.log(f"{base_message} - Node found.")
                 return True
         
         # If neither a node nor a network dot is found, display an error message
-        print(f"!! Error: {node_type} node '{node_name}' not found as a child of '{self.parent_node}/{self.child_node}'.")
+        print(f"{base_message} - !! Error: Not found as a child of '{self.parent_node}/{self.child_node}'.")
         return False
 
     def set_indices(self):

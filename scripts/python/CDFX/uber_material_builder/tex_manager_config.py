@@ -13,7 +13,7 @@ tex_type_patterns = {
     "emcolor": r"\b(em\W?color|em(?:is|it)(?:sive|sion)?\W?(?:colou?r)?)\b",
     "emintensity": r"\b(em\W?intensity|em(?:is|it)(?:sive|sion)?\W?intensity)\b",
     "opacity": r"\b(opac(?:ity)?|mask)\b",
-    "bump": r"\b(bump|norgl|nordx|norm?(?:al)?)\b",
+    "bump": r"\b(bump|nor\W?gl|nor\W?dx|norm?(?:al)?)\b",
     "displacement": r"\b(disp(?:lacement)?|height)\b",
     "preview": r"\b(prev(?:iew)?|thumb(?:nail)?|render)\b",
 }
@@ -54,6 +54,23 @@ preferred_keywords = {
     "emcolor": [],
     "emintensity": [],
     "opacity": [],
-    "bump": [],
+    "bump": ["normal", "norm", "nor_gl", "norgl"],
     "displacement": ["16bit"],
+}
+excluded_keywords = {
+    "albedo": [],
+    "metalness": [],
+    "roughness": [],
+    "reflection": [],
+    "transmission": [],
+    "mscolor": [],
+    "msradius": [],
+    "sheen": [],
+    "coatroughness": [],
+    "coatbump": [],
+    "emcolor": [],
+    "emintensity": [],
+    "opacity": [],
+    "bump": [],
+    "displacement": [],
 }
