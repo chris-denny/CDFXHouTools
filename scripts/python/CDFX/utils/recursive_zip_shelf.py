@@ -1,4 +1,5 @@
 import hou # type: ignore
+import os
 from PySide2 import QtWidgets, QtCore # type: ignore
 from CDFX.utils.recursive_zip import run_recursive_zipper
 
@@ -10,11 +11,14 @@ def show_recursive_zip_ui():
 
             self.layout = QtWidgets.QVBoxLayout()
 
-            self.directory_label = QtWidgets.QLabel("Directory Path:")
+            self.directory_label = QtWidgets.QLabel("Root Directory:")
             self.directory_input = QtWidgets.QLineEdit()
             self.directory_input.setText("$HIP")
+            self.directory_button = QtWidgets.QPushButton("Browse...")
+            self.directory_button.clicked.connect(self.select_directory)
             self.layout.addWidget(self.directory_label)
             self.layout.addWidget(self.directory_input)
+            self.layout.addWidget(self.directory_button)
 
             self.folder_label = QtWidgets.QLabel("Backups Folder Name:")
             self.folder_input = QtWidgets.QLineEdit()
@@ -61,6 +65,7 @@ def show_recursive_zip_ui():
 
         def print_and_confirm_files(self, action, backups_dir, files):
             total_size_mb = self.get_size_mb(sum(size for _, size in files) * 1_000)
+            backups_dir = backups_dir.replace("\\", "/")
             message = f"Files to {action} in {backups_dir}:\n"
             
             if len(files) > 10:
@@ -83,9 +88,15 @@ def show_recursive_zip_ui():
         def get_size_mb(self, size_bytes):
             return round(size_bytes / 1_000_000, 2)
 
+        def select_directory(self):
+            directory = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory")
+            if directory:
+                self.directory_input.setText(directory)
+
     dialog = RecursiveZipUI()
     if dialog.exec_():
-        directory = hou.expandString(dialog.directory_input.text())
+        directory = hou.expandString(dialog.directory_input.text().replace("\\", "/"))
+        directory = os.path.normpath(directory)
         folder = hou.expandString(dialog.folder_input.text())
         unattended = dialog.unattended_checkbox.isChecked()
         zip_files = unattended and dialog.zip_checkbox.isChecked()

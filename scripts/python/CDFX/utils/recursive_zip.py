@@ -20,6 +20,7 @@ import threading
 class RecursiveZipper:
     def __init__(self):
         self.args = self.parse_arguments()
+        self.directory = os.path.normpath(self.args.directory)
         self.folders_dict = {}
         self.folder_pattern = re.compile(f"^{re.escape(self.args.folder)}$", re.IGNORECASE)
         self.progress_lock = threading.Lock()
@@ -74,42 +75,47 @@ class RecursiveZipper:
     
     def find_folders(self):
         list_file_name = f"{self.args.folder}_zip_log.csv"
-        current_datetime = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         zip_pattern = re.compile(rf"{re.escape(self.args.folder)}_\d{{8}}_\d{{6}}\.zip", re.IGNORECASE)
 
-        for root, dirs, _ in os.walk(self.args.directory):
+        found_matching_dirs = False
+        for root, dirs, _ in os.walk(self.directory):
             dirs[:] = [d for d in dirs if not self.is_hidden(os.path.join(root, d))]
             matching_dirs = [d for d in dirs if self.folder_pattern.match(d)]
-            for matched_dir in matching_dirs:
-                backups_dir = os.path.join(root, matched_dir)
+            if matching_dirs:
+                found_matching_dirs = True
 
-                zip_file_name = f"{matched_dir}_{current_datetime}.zip"
-                existing_zips = [f for f in os.listdir(backups_dir) if zip_pattern.match(f)]
-                exclude_files = set(existing_zips + [list_file_name])
-                
-                backup_files = self.create_backup_files(backups_dir, exclude_files)
-                if backup_files:
-                    if self.args.unattended:
-                        should_zip = self.args.zip
-                        should_delete = self.args.delete
-                        if not should_zip and not should_delete:
-                            print(f"No action specified for '{matched_dir}' within {root}")
-                    else:
-                        should_zip = self.print_and_confirm_files("zip", backups_dir, backup_files)
-                        if should_zip:
-                            should_delete = self.print_and_confirm_files("delete", backups_dir, backup_files)
+                for matched_dir in matching_dirs:
+                    backups_dir = os.path.join(root, matched_dir)
+                    current_datetime = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                    zip_file_name = f"{matched_dir}_{current_datetime}.zip"
+                    existing_zips = [f for f in os.listdir(backups_dir) if zip_pattern.match(f)]
+                    exclude_files = set(existing_zips + [list_file_name])
+                    
+                    backup_files = self.create_backup_files(backups_dir, exclude_files)
+                    if backup_files:
+                        if self.args.unattended:
+                            should_zip = self.args.zip
+                            should_delete = self.args.delete
+                            if not should_zip and not should_delete:
+                                print(f"No action specified for {backups_dir}")
                         else:
-                            should_delete = False
-                    if should_zip:
-                        self.folders_dict[backups_dir] = {
-                            "zip_name": zip_file_name,
-                            "zip_path": os.path.join(backups_dir, zip_file_name),
-                            "list_path": os.path.join(backups_dir, list_file_name),
-                            "file_list": backup_files,
-                            "delete": should_delete,
-                        }
-                else:
-                    print(f"No files to compress in '{matched_dir}' within {root}")
+                            should_zip = self.print_and_confirm_files("zip", backups_dir, backup_files)
+                            if should_zip:
+                                should_delete = self.print_and_confirm_files("delete", backups_dir, backup_files)
+                            else:
+                                should_delete = False
+                        if should_zip:
+                            self.folders_dict[backups_dir] = {
+                                "zip_name": zip_file_name,
+                                "zip_path": os.path.join(backups_dir, zip_file_name),
+                                "list_path": os.path.join(backups_dir, list_file_name),
+                                "file_list": backup_files,
+                                "delete": should_delete,
+                            }
+                    else:
+                        print(f"No files to compress in {backups_dir}")
+        if not found_matching_dirs:
+            print(f"No folders found matching '{self.args.folder}' in {self.directory}")
 
     def create_backup_files(self, backups_dir, exclude_files):
         backup_files = []
@@ -265,7 +271,7 @@ class RecursiveZipper:
 
 
     def run(self):
-        if os.path.exists(self.args.directory):
+        if os.path.exists(self.directory):
             self.find_folders()
         else:
             print("Directory not found")
@@ -277,6 +283,9 @@ class RecursiveZipper:
             end_time = time.time()
             execution_time = end_time - start_time
             print(f"Total execution time: {execution_time:.2f} seconds")
+            print("### All folders have been processed ###")
+        else:
+            print("### No processing needed ###")
 
 
 def run_recursive_zipper(directory, folder, zip=False, delete=False, unattended=False, parallel=4, compression=2, print_and_confirm_callback=None):
@@ -312,7 +321,4 @@ def run_recursive_zipper(directory, folder, zip=False, delete=False, unattended=
 
 if __name__ == "__main__":
     zipper = RecursiveZipper()
-    start_time = time.time()
     zipper.run()
-    end_time = time.time()
-    print(f"Total execution time: {end_time - start_time:.2f} seconds")
