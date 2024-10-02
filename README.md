@@ -115,6 +115,8 @@ Manipulate the scale, rotation, and translation of the incoming geometry, in tha
 Context: *VOP*\
 A custom triplanar implementation that enables proper xyz-axis specific rotations, edge and blend noise, and axis-mirroring fixes to match other common triplanar methods. Outputs include UVs and weights for use with the MtlX Triplanar Textures node.
 
+NOTE: For an unknown reason, Karma CPU doesn't properly use 'rest' on this node. Works on Karma XPU. The exposed 'Nodes' hda version works with both.
+
 ### MtlX Triplanar Textures
 Context: *VOP*\
 A reduced version of the MtlX Triplanar node that supports hex-tiling. UVs and weights output from a MtlX Triplanar node must be used. Due to the complexity of the UVs and weights creation, it's better to use the MaterialX node Triplanar implmentation instead of re-creating it internally.
