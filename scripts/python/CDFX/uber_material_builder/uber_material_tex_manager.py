@@ -43,7 +43,7 @@ class TexManager:
         self.preferred_resolution = None
         # Regex patterns for texture types
         self.tex_type_patterns = tex_type_patterns
-        self.resolution_pattern = r"(\d{1,2}k)"
+        self.resolution_pattern = r"(?<![a-zA-Z0-9])(\d{1,2}k)(?![a-zA-Z0-9])"
         self.udim_pattern = r"(?<!\d)(\d{4})(?!\d)"
 
     def log(self, message):

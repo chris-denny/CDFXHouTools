@@ -49,6 +49,8 @@ while maintaining flexibility and control over the final result."""
     allowing you to switch between rendering with Redshift or Karma on the fly;
     there's no need to change the material assignment. While it's not a perfect 1:1 match between the two,
     it's close enough to experiment with and reduces conversion time if you change render engines.
+    
+    NOTE: Karma XPU has to compile shaders when the shader network changes, so usage can become slow and non-interactive. SideFX is working on speeding up compile time.
 
 * *Support for both ROP and Solaris context for Redshift*
 

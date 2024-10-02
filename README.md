@@ -41,6 +41,8 @@ The Uber Material Builder streamlines the material creation process, allowing ar
    When using a triplanar mapping method, add randomization to scale, offset, or rotation based on a point or vertex attribute.
 - **Simultaneous Redshift and Karma Creation**\
    Redshift and Karma networks are modified simulatenously and are wired into a Collect node, allowing you to switch between rendering with Redshift or Karma on the fly; there's no need to change the material assignment. While it's not a perfect 1:1 match between the two, it's close enough to experiment with and reduces conversion time if you change render engines.
+
+   NOTE: Karma is still WIP, CPU doesn't respect 'rest' on the single-node mtlx nodes, and XPU has to compile shaders when the shader network changes, so usage can become slow and non-interactive. SideFX is working on speeding up compile time.
 - **Support for both ROP and Solaris context for Redshift**
 - **(Mostly) Compatible with Redshift RT**\
    Because the shader network only wires nodes that are needed, most materials work fine in RT mode.
