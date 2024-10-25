@@ -58,7 +58,7 @@ The Uber Material Builder streamlines the material creation process, allowing ar
 - For brief information and notes, there is a WIP help page accessible via the "Click for Help" icon.
 - Render engine specific versions are included, use the Karma variant if you don't have Redshift.
 - I recommended you set "REDSHIFT_DISABLE_AUTOTEXTURESCOLORSPACE" to "1" via either houdini.env or packages to prevent Redshift from changing the color space on rs texture nodes.
-- For Redshift, the OSL implementation of triplanar and hex-tiled triplanar adds 20-30s of compile time at the start of each new 'session'. Because of this, by default the uber material uses the default Redshift triplanar node. When set to hex-tiled triplanar, using OSL is forced.
+- For Redshift, the OSL implementation of triplanar and hex-tiled triplanar adds 20-30s of compile time at the start of each new session. When rendering rsproxy files, each frame is considered a new session. Because of this, by default the uber material uses the default Redshift triplanar node. When set to hex-tiled triplanar, using OSL is forced.
 ___
 
 ## HDAs
@@ -66,7 +66,7 @@ Accessible via the "CDFX" tab menu.
 
 ### Boolean Advanced
 Context: *SOP*\
-A multi-threaded implementation of the boolean sop which includes numerous quality-of-life additions. Cutter position randomization, group and attribute transfer, and UV creation are to name a few. When an object fails to resolve the cut-faces, which is often occurs with CAD-based objects, it automatically switches to a more robust, but slower, VDB-based implementation.
+A multi-threaded implementation of the boolean sop which includes numerous quality-of-life additions. Cutter position randomization, group and attribute transfer, and UV creation are to name a few. When an object fails to resolve the cut-faces, which often occurs with CAD-based objects, it automatically switches to a more robust, but slower, VDB-based implementation.
 
 ### Checkpoint
 Context: *SOP*\
