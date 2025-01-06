@@ -88,6 +88,10 @@ Filters downstream geometry based on primitive or point attributes/groups, allow
 Context: *SOP*\
 Retains the same functionality of the base Houdini Material SOP node, but adds the ability to assign random materials from a list for surface randomization.
 
+### Part Placer
+Context: *SOP*\
+Finds center points of selected open-ended tubes or edge loops and places geometry with correct position and orientation. An 'alignment helper' helps orient geometry in the correct direction. Useful for placing bolts and other hardware into holes in objects like CAD files.
+
 ### Redshift Proxy Object
 Context: *OBJ*\
 Eases and enhances the method of creating Redshift proxy files for geometry. The file path is built based on the node name and adds frame numbering if necessary. "Enable Proxy File" and the internal routing of geo is controlled via a script and expressions, so "Render Proxy to Disk" works even when a proxy file is already being used. "Original Geometry" is added as an option for display mode. 

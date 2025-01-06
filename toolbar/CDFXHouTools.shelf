@@ -6,6 +6,7 @@
  a single file. -->
 
   <toolshelf name="CDFXHouTools" label="CDFXHouTools">
+    <memberTool name="increment_save"/>
     <memberTool name="recreate_nodes"/>
     <memberTool name="list_node_in_out"/>
     <memberTool name="zip_backups"/>
@@ -67,5 +68,14 @@ reload(recursive_zip_shelf)
 
 recursive_zip_shelf.show_recursive_zip_ui()
 ]]></script>
+  </tool>
+
+  <tool name="increment_save" label="Increment Save" icon="BUTTONS_auto_save">
+    <script scriptType="python"><![CDATA[import hou
+from importlib import reload
+from CDFX.utils import increment_save
+reload(increment_save)
+
+increment_save.run_increment_save()]]></script>
   </tool>
 </shelfDocument>
