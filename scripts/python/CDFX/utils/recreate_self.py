@@ -7,6 +7,7 @@ import os
 class NodeRecreator:
     def __init__(self, node, node_destroy_check, grab_latest, keep_children, use_new_parm_defaults, print_diagnostics):
         self.node = node
+        self.node_name_components = self.node.type().nameComponents()
         self.new_node = None
         self.parent_node = self.node.parent()
         self.node_name = self.node.name()
@@ -111,6 +112,24 @@ class NodeRecreator:
                         copied_nodes.add(child)
                         self.copy_children(old_child_node, new_child_node, copied_nodes)
 
+    def redshift_noise_fix_copy(self, parm, new_parm):
+        try:
+            if not parm.isAtDefault(compare_expressions=True) or not self.use_new_parm_defaults:
+                print(f"Redshift fix for {self.node.name()}:", end=" ")
+                new_parm = self.new_node.parm(parm.name()[:-1] + "1" + parm.name()[-1])
+                new_parm.deleteAllKeyframes()
+                new_parm.setFromParm(parm)
+                print(f"Parameter '{parm.name()}' copied to '{new_parm.name()}'")
+        except AttributeError:
+            print(f"Failed to copy parameter '{parm.name()}'")
+            self.success = 0
+
+    def redshift_noise_fix_check(self, parm, new_parm):
+        new_parm = self.new_node.parm(parm.name()[:-1] + "1" + parm.name()[-1])
+        if new_parm and new_parm.rawValue() != parm.rawValue():
+            print(f"Warning: Parameter {parm.name()} does not match")
+            self.success = 0
+    
     def copy_parameters(self):
         self.log(f"Copying parameters{ ' ' if self.use_new_parm_defaults else ' (including those still at default values) '}to new node.")
         excluded_parms = ["tex_mngr_msg"]
@@ -128,19 +147,24 @@ class NodeRecreator:
                     self.success = 0
             else:
                 try:
+                    # Use redshift_noise_fix_copy if using old parameter names
+                    if parm.name() in ["detail_b_noise_colorr", "detail_b_noise_colorg", "detail_b_noise_colorb", "detail_c_noise_colorr", "detail_c_noise_colorg", "detail_c_noise_colorb"]:
+                        if self.node_name_components[2] in ["Uber_Material_Builder", "Uber_Material_Builder_Redshift"]:
+                            self.redshift_noise_fix_copy(parm, new_parm)
                     # Create the parameter on the new node if it doesn't exist
-                    parm_template = parm.parmTemplate()
-                    if str(parm_template.type()) not in ["parmTemplateType.FolderSet",
-                                                        "parmTemplateType.Folder",
-                                                        "parmTemplateType.Separator"]:
-                        self.new_node.addSpareParmTuple(parm_template)
-                        new_parm = self.new_node.parm(parm.name())
-                        new_parm.setFromParm(parm)
-                        self.log(f"Parameter '{parm.name()}' created and set on the new node. Value is {parm.eval()}.")
-                        
                     else:
-                        self.log(f"Parameter '{parm.name()}' is a folder or separator, skipping.")
-                    
+                        parm_template = parm.parmTemplate()
+                        if str(parm_template.type()) not in ["parmTemplateType.FolderSet",
+                                                            "parmTemplateType.Folder",
+                                                            "parmTemplateType.Separator"]:
+                            self.new_node.addSpareParmTuple(parm_template)
+                            new_parm = self.new_node.parm(parm.name())
+                            new_parm.setFromParm(parm)
+                            self.log(f"Parameter '{parm.name()}' created and set on the new node. Value is {parm.eval()}.")
+                            
+                        else:
+                            self.log(f"Parameter '{parm.name()}' is a folder or separator, skipping.")
+                        
                 except AttributeError:
                     self.log(f"Failed to create and set parameter '{parm.name()}'")
                     self.success = 0
@@ -153,10 +177,15 @@ class NodeRecreator:
                 if str(parm.parmTemplate().type()) not in ["parmTemplateType.FolderSet",
                                                            "parmTemplateType.Folder",
                                                            "parmTemplateType.Separator"]:
-                    new_parm = self.new_node.parm(parm.name())
-                    if new_parm and new_parm.rawValue() != parm.rawValue():
-                        print(f"Warning: Parameter {parm.name()} does not match")
-                        self.success = 0
+                    # Use redshift_noise_fix_check if using old parameter names
+                    if parm.name() in ["detail_b_noise_colorr", "detail_b_noise_colorg", "detail_b_noise_colorb", "detail_c_noise_colorr", "detail_c_noise_colorg", "detail_c_noise_colorb"]:
+                        if self.node_name_components[2] in ["Uber_Material_Builder", "Uber_Material_Builder_Redshift"]:
+                            self.redshift_noise_fix_check(parm, new_parm)
+                    else:
+                        new_parm = self.new_node.parm(parm.name())
+                        if new_parm and new_parm.rawValue() != parm.rawValue():
+                            print(f"Warning: Parameter {parm.name()} does not match")
+                            self.success = 0
 
     def recreate(self):
         # Create a new node of the same type

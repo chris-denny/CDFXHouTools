@@ -103,6 +103,14 @@ def show_recursive_zip_ui():
         delete_files = unattended and dialog.delete_checkbox.isChecked()
         print(f"Directory: '{directory}', Folder Search: '{folder}'\nRun Unattended: {unattended}, Force Zip: {zip_files}, Force Delete: {delete_files}")
         
+        # Show processing message
+        process_msg = QtWidgets.QMessageBox()
+        process_msg.setWindowTitle("Working")
+        process_msg.setText("Processing files...")
+        process_msg.setStandardButtons(QtWidgets.QMessageBox.NoButton)
+        process_msg.setWindowModality(QtCore.Qt.WindowModal)
+        process_msg.show()
+        
         try:
             run_recursive_zipper(
                 directory=directory,
@@ -116,3 +124,5 @@ def show_recursive_zip_ui():
             )
         except Exception as e:
             QtWidgets.QMessageBox.critical(None, "Error", str(e))
+        finally:
+            process_msg.close()  # Ensure the message box is closed
