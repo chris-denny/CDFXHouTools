@@ -88,6 +88,10 @@ Filters downstream geometry based on primitive or point attributes/groups, allow
 Context: *SOP*\
 Retains the same functionality of the base Houdini Material SOP node, but adds the ability to assign random materials from a list for surface randomization.
 
+### Overwrite Group
+Context: *SOP*\
+Expanded functionality of the standard "Group Create" node, which allows removal from existing groups that match an existing group name (wildcards and regex are supported). Useful for ensuring a selection is only associated with a single group for things like material assignment.
+
 ### Part Placer
 Context: *SOP*\
 Finds center points of selected open-ended tubes or edge loops and places geometry with correct position and orientation. An 'alignment helper' helps orient geometry in the correct direction. Useful for placing bolts and other hardware into holes in objects like CAD files.
