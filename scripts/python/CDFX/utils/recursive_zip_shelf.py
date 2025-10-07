@@ -1,6 +1,9 @@
 import hou # type: ignore
 import os
-from PySide2 import QtWidgets, QtCore # type: ignore
+try:
+    from PySide6 import QtWidgets, QtCore # type: ignore
+except ImportError:
+    from PySide2 import QtWidgets, QtCore # type: ignore
 from CDFX.utils.recursive_zip import run_recursive_zipper
 
 def show_recursive_zip_ui():

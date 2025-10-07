@@ -1,4 +1,4 @@
-import hou
+import hou #type: ignore
 
 def run_increment_save():
     """
@@ -8,7 +8,7 @@ def run_increment_save():
     try:
         hou.hipFile.saveAndIncrementFileName()
         new_file_name = hou.hipFile.basename()
-        print(f"Saved {old_file_name} >>> {new_file_name}")
+        hou.ui.setStatusMessage(f"Saved {old_file_name} >>> {new_file_name}", hou.severityType.Message)
     except hou.OperationFailed as e:
         hou.ui.displayError(f"Error incrementing save: {e}")
 

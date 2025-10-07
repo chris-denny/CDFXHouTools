@@ -4,7 +4,10 @@ This script recreates selected nodes in Houdini.
 
 import hou #type: ignore
 import sys
-from PySide2 import QtWidgets, QtCore #type: ignore
+try:
+    from PySide6 import QtWidgets, QtCore #type: ignore
+except ImportError:
+    from PySide2 import QtWidgets, QtCore #type: ignore
 from importlib import reload
 import CDFX.utils.recreate_self
 reload(CDFX.utils.recreate_self)

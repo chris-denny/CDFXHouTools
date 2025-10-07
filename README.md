@@ -104,6 +104,20 @@ Eases and enhances the method of creating Redshift proxy files for geometry. The
 Context: *SOP*\
 In addition to the default Rest SOP controls, the ability to use vertex normals for rest normals is added.
 
+### Transfer To Similar
+Context: *SOP*\
+Transfers attributes and groups from pieces from one assembly to another by finding the closest matching parts using centroid positions and bounding box volume calculations. This is particularly useful for updating CAD assemblies or transferring modifications between similar geometric assemblies.
+
+**Matching Process:**
+1. **Primary Centroid Search**: Initially searches for matching pieces within a tight tolerance of 1e-10 units based on centroid positions
+2. **Secondary Search Distance**: If no pieces are found in the primary search, expands the search using a user-defined secondary centroid search distance
+3. **Minimum Volume Difference Identification**: From all matching pieces found in the position search, calculates bounding box volume differences and identifies the piece with the minimum volume difference as the best geometric match
+4. **Volume Buffer Inclusion**: Uses the identified minimum volume difference plus a user-defined volume buffer to include other pieces with similar volumes, preventing false-positive matches while allowing for reasonable geometric variations
+5. **Final Selection**: From the volume-filtered candidates, selects the piece with the nearest centroid position as the final match
+6. **Volume Threshold**: Applies a hard cut-off for volume differences - pieces that match position but exceed this threshold are ignored
+
+This approach combines both spatial proximity and geometric similarity to reliably transfer pieces between assemblies while maintaining accuracy and preventing mismatched transfers.
+
 ### Unique Paths
 Context: *SOP*\
 Creates unique `path` and `name` attributes on primitives based on a connectivity attribute. This ensures no duplicate paths or names, which often occurs when working with CAD models. "Cusp" further splits geometry apart; I often use names like `splitPath` and `splitName` to differentiate these. This is handy for material assignment, as a single CAD part may have different surfaces and finishes. The process is multi-threaded so it remains as fast as possible, even on objects that have tens of thousands of pieces.
