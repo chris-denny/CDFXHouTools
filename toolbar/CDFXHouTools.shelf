@@ -24,40 +24,12 @@ recreate_self_shelf.run_recreate_self_shelf()
 
   <tool name="list_node_in_out" label="List Node Inputs and Outputs" icon="DATATYPES_node_list">
     <script scriptType="python"><![CDATA[import hou
+from importlib import reload
+from CDFX.utils import list_node_connections
+reload(list_node_connections)
 
-def print_node_connections():
-    # Get the currently selected node
-    selected_nodes = hou.selectedNodes()
-
-    if not selected_nodes:
-        print(f"\nNo node selected.")
-        return
-
-    node = selected_nodes[0]
-    
-    print(f"\nConnections for node '{node.name()}':")
-    
-    input_names = node.inputNames()
-    output_names = node.outputNames()
-    
-    # Print inputs
-    if input_names:
-        print("  Inputs:")
-        for name in input_names:
-            print(f"    {name}: {node.inputIndex(name)}")
-    else:
-        print("  No inputs.")
-    
-    # Print outputs
-    if output_names:
-        print("  Outputs:")
-        for name in output_names:
-            print(f"    {name}: {node.outputIndex(name)}")
-    else:
-        print("  No outputs.")
-
-# Run the function
-print_node_connections()]]></script>
+list_node_connections.print_node_connections()
+]]></script>
   </tool>
 
   <tool name="zip_backups" label="Zip Backups" icon="TOP_filecompress">
