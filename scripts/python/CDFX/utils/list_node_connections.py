@@ -45,6 +45,6 @@ def print_node_connections():
                 else:
                     connection_names = None
                 print(f"    {output_index}: {label} ({name})")
-                if connection_names: print(f"        >>> {connection_names}")
+                if connection_names: print(f"      >>> {connection_names}")
         else:
             print("  No Outputs.")
