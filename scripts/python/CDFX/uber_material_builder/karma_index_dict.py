@@ -109,4 +109,16 @@ karma_index_dict = {
     ("detail_b",        None, "detailout"):         {"target_index": 1},
     ("detail_c",        "output", "detailout"):     {"target_index": 2},
     ("detail_c",        None, "detailout"):         {"target_index": 2},
+    # Solo shader inputs
+    ("solo", "albedo"):                             {"shader_input": 1},
+    ("solo", "metalness"):                          {"shader_input": 3},
+    ("solo", "reflection"):                         {"shader_input": 5},
+    ("solo", "roughness"):                          {"shader_input": 6},
+    ("solo", "transmission"):                       {"shader_input": 11},
+    ("solo", "mscolor"):                            {"shader_input": 18},
+    ("solo", "msradius"):                           {"shader_input": 19},
+    ("solo", "sheen"):                              {"shader_input": 23},
+    ("solo", "coatroughness"):                      {"shader_input": 27},
+    ("solo", "emcolor"):                            {"shader_input": 37},
+    ("solo", "opacity"):                            {"shader_input": 38},
 }

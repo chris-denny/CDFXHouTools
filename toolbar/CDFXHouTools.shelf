@@ -6,9 +6,10 @@
  a single file. -->
 
   <toolshelf name="CDFXHouTools" label="CDFXHouTools">
-    <memberTool name="increment_save"/>
-    <memberTool name="recreate_nodes"/>
+    <memberTool name="Stack Visibility"/>
     <memberTool name="list_node_in_out"/>
+    <memberTool name="recreate_nodes"/>
+    <memberTool name="increment_save"/>
     <memberTool name="zip_backups"/>
   </toolshelf>
 
@@ -49,5 +50,23 @@ from CDFX.utils import increment_save
 reload(increment_save)
 
 increment_save.run_increment_save()]]></script>
+  </tool>
+
+  <tool name="Stack Visibility" label="Stack Visibility" icon="SOP_visibility">
+    <script scriptType="python"><![CDATA[import hou
+
+selected = hou.selectedNodes()
+if not selected:
+    hou.ui.displayMessage("No node selected, please select the CDFX Stack Visibility node.")
+else:
+    node = selected[0]
+    _, namespace, name, _ = node.type().nameComponents()
+    if namespace != "CDFX" or name != "Stack_Visibility":
+        hou.ui.displayMessage(
+            "Selected node is not a Stack Visibility HDA.\n"
+            "Select the Stack Visibility node in the network editor before running this tool."
+        )
+    else:
+        node.hdaModule().add_selection(node)]]></script>
   </tool>
 </shelfDocument>

@@ -111,4 +111,16 @@ redshift_index_dict = {
     ("detail_b",        None, "detailout"):         {"target_index": 3},
     ("detail_c",        "output", "detailout"):     {"target_index": 5},
     ("detail_c",        None, "detailout"):         {"target_index": 5},
+    # Solo shader inputs
+    ("solo", "albedo"):                             {"shader_input": 0},
+    ("solo", "metalness"):                          {"shader_input": 3},
+    ("solo", "reflection"):                         {"shader_input": 4},
+    ("solo", "roughness"):                          {"shader_input": 6},
+    ("solo", "transmission"):                       {"shader_input": 10},
+    ("solo", "mscolor"):                            {"shader_input": 16},
+    ("solo", "msradius"):                           {"shader_input": 18},
+    ("solo", "sheen"):                              {"shader_input": 20},
+    ("solo", "coatroughness"):                      {"shader_input": 27},
+    ("solo", "emcolor"):                            {"shader_input": 32},
+    ("solo", "opacity"):                            {"shader_input": 33},
 }

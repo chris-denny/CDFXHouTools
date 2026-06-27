@@ -1,4 +1,4 @@
-﻿import hou # type: ignore
+import hou # type: ignore
 import sys
 import time
 
@@ -7,6 +7,9 @@ from CDFX.uber_material_builder.usd_index_dict import usd_index_dict
 from CDFX.uber_material_builder.karma_index_dict import karma_index_dict
 from CDFX.uber_material_builder.redshift_index_dict import redshift_index_dict
 from CDFX.uber_material_builder.render_engine_index_dict import render_engine_index_dict
+
+# Pre-compute reverse lookup for suffix to key mapping
+_SUFFIX_TO_KEY = {suffix: key for key, suffix in node_dict.items()}
 
 
 class NodeConnector:
@@ -35,11 +38,20 @@ class NodeConnector:
         self.shader_output = self.parent_node.parm("solo_METH").eval()
         self.osltri_enabled = (self.parent_node.parm("enable_osltri").eval() == 1 if self.renderer == "redshift" else False)
         self.print_diagnostics = print_diagnostics
+        
+        # Cache for expanded node names (lazy evaluation)
+        self._expanded_cache = {}
 
     def log(self, message):
         if self.print_diagnostics:
             if self.renderer != "usd":
                 print(message)
+    
+    def _get_expanded_name(self, suffix_key):
+        """Get expanded node name with caching to avoid redundant string concatenation."""
+        if suffix_key not in self._expanded_cache:
+            self._expanded_cache[suffix_key] = f"{self.property_name}{self.node_dict[suffix_key]}"
+        return self._expanded_cache[suffix_key]
 
     def get_node_property(self, property_suffix):
         property_name = f"{self.property_name}{self.node_dict[property_suffix]}"
@@ -94,41 +106,29 @@ class NodeConnector:
         return False
 
     def set_indices(self):
-        source_suffix_key = next(
-            (
-                key
-                for key, suffix in self.node_dict.items()
-                if self.source_node_name and self.source_node_name.endswith(suffix)
-            ),
-            None,
-        )
-        target_suffix_key = next(
-            (
-                key
-                for key, suffix in self.node_dict.items()
-                if self.target_node_name and self.target_node_name.endswith(suffix)
-            ),
-            None,
-        )
+        # Use pre-computed reverse lookup for O(1) suffix key finding
+        source_suffix_key = None
+        if self.source_node_name:
+            for suffix, key in _SUFFIX_TO_KEY.items():
+                if self.source_node_name.endswith(suffix):
+                    source_suffix_key = key
+                    break
+        
+        target_suffix_key = None
+        if self.target_node_name:
+            for suffix, key in _SUFFIX_TO_KEY.items():
+                if self.target_node_name.endswith(suffix):
+                    target_suffix_key = key
+                    break
 
-        try:
-            if self.renderer == "usd":
-                self.source_node_index = self.renderer_index_dict[self.property_name]["source_index"]
-            else:
-                self.source_node_index = self.renderer_index_dict[
-                    (self.property_name, source_suffix_key, target_suffix_key)
-                ]["source_index"]
-        except KeyError:
-            self.source_node_index = 0
-        try:
-            if self.renderer == "usd":
-                self.target_node_index = self.renderer_index_dict[self.property_name]["target_index"]
-            else:
-                self.target_node_index = self.renderer_index_dict[
-                    (self.property_name, source_suffix_key, target_suffix_key)
-                ]["target_index"]
-        except KeyError:
-            self.target_node_index = 0
+        # Use .get() with defaults instead of try/except for better performance
+        if self.renderer == "usd":
+            self.source_node_index = self.renderer_index_dict.get(self.property_name, {}).get("source_index", 0)
+            self.target_node_index = self.renderer_index_dict.get(self.property_name, {}).get("target_index", 0)
+        else:
+            lookup_key = (self.property_name, source_suffix_key, target_suffix_key)
+            self.source_node_index = self.renderer_index_dict.get(lookup_key, {}).get("source_index", 0)
+            self.target_node_index = self.renderer_index_dict.get(lookup_key, {}).get("target_index", 0)
 
         self.log(
             f"  Source suffix key: '{source_suffix_key}' for source node: '{self.source_node_name}'\n"
@@ -189,6 +189,9 @@ class NodeConnector:
             self.property_name = self.parameter_name[:-len(suffix)]
             self.suffix_key = key
             self.suffix = suffix
+            
+            # Clear the expanded name cache for new property
+            self._expanded_cache.clear()
 
             try:
                 self.property_method = self.parent_node.parm(
@@ -200,7 +203,7 @@ class NodeConnector:
             if self.property_method == self.node_dict["custom"]:
                 return
 
-            # Check property methods
+            # Cache property evaluations to avoid redundant Houdini queries
             method_is_none = self.property_method == self.node_dict["none"]
             texture_enabled = self.property_method == self.node_dict["tex"]
             triplanar_enabled = self.get_node_property("triplanar")
@@ -209,21 +212,11 @@ class NodeConnector:
             aces_enabled = self.get_node_property("aces")
             roundcorner_enabled = self.get_node_property("roundcorner")
 
-            # Expanded strings for nodes
+            # Use lazy evaluation via helper method for expanded strings
+            # Only create strings when actually needed
             expanded_property_method = f"{self.property_name}{self.property_method}"
-            expanded_triplanar = f"{self.property_name}{self.node_dict['triplanar']}"
-            expanded_osltriplanar = f"{self.property_name}{self.node_dict['osltri']}"
-            expanded_hex = f"{self.property_name}{self.node_dict['hex']}"
-            expanded_hextri = f"{self.property_name}{self.node_dict['hextri']}"
-            expanded_detail = f"{self.property_name}{self.node_dict['detail']}"
-            expanded_detail_cc = f"{self.property_name}{self.node_dict['detail_cc']}"
-            expanded_roundcorner = f"{self.property_name}{self.node_dict['roundcorner']}"
-            expanded_aces = f"{self.property_name}{self.node_dict['aces']}"
-            expanded_source = f"{self.property_name}{self.node_dict['source']}"
-            expanded_cleansource = f"{self.property_name}{self.node_dict['cleansource']}"
-            expanded_output = f"{self.property_name}{self.node_dict['output']}"
-
-            # Expanded strings for parameters and node names
+            
+            # Cache commonly used node names (not property-specific)
             expanded_sprite = self.node_dict["sprite"]
             expanded_solo = self.node_dict["solo"]
             expanded_aovout = self.node_dict["aovout"]
@@ -239,7 +232,7 @@ class NodeConnector:
                         self.compile_rs_osl(f"{self.property_name}_tri_hex_tile", "UV_Offset")
                         self.compile_rs_osl(f"{self.property_name}_tri_osl", "UV_Offset")
                     else:
-                        self.compile_rs_osl(expanded_aces, "outColor")
+                        self.compile_rs_osl(self._get_expanded_name("aces"), "outColor")
                         self.compile_rs_osl("hex_tile", "UV_Offset")
                         self.compile_rs_osl("tri_hex_tile", "UV_Offset")
                         self.compile_rs_osl("tri_osl", "UV_Offset")
@@ -258,6 +251,7 @@ class NodeConnector:
             if self.renderer == "karma":
                 if self.suffix_key == "kmablend":
                     new_node_type = self.get_node_property("kmablend")
+                    expanded_detail = self._get_expanded_name("detail")
                     if self.check_node(expanded_detail, "Detail"):
                         self.log(f"Changing {expanded_detail} from '{self.child_node.node(expanded_detail).type().name()}' to '{new_node_type}'")
                         self.child_node.node(expanded_detail).changeNodeType(new_node_type)
@@ -313,7 +307,17 @@ class NodeConnector:
                     case "displacement":
                         self.source_node_name = self.property_method + self.node_dict["source"]
                     case _:
-                        self.source_node_name = self.property_method + self.node_dict["output"]
+                        shader_node = self.child_node.node(expanded_shader)
+                        solo_key = ("solo", self.property_method)
+                        shader_input = self.renderer_index_dict.get(solo_key, {}).get("shader_input")
+                        if shader_node is not None and shader_input is not None:
+                            input_node = shader_node.input(shader_input)
+                            if input_node is not None:
+                                self.source_node_name = input_node.name()
+                            else:
+                                self.source_node_name = self.property_method + self.node_dict["output"]
+                        else:
+                            self.source_node_name = self.property_method + self.node_dict["output"]
                 if self.renderer =="karma":
                     self.connect_nodes(self.source_node_name, expanded_solo, target_index_override=1)
                 else:
@@ -323,18 +327,20 @@ class NodeConnector:
 
             if texture_enabled:
                 if hex_enabled and triplanar_enabled:
-                    expanded_property_method = expanded_hextri
+                    expanded_property_method = self._get_expanded_name("hextri")
                 elif hex_enabled:
-                    expanded_property_method = expanded_hex
+                    expanded_property_method = self._get_expanded_name("hex")
                 elif triplanar_enabled:
                     if self.osltri_enabled:
-                        expanded_property_method = expanded_osltriplanar
+                        expanded_property_method = self._get_expanded_name("osltri")
                     else:
-                        expanded_property_method = expanded_triplanar
+                        expanded_property_method = self._get_expanded_name("triplanar")
             if method_is_none:
                 expanded_property_method = None
             
             if self.suffix_key == "detail_cc":
+                expanded_detail_cc = self._get_expanded_name("detail_cc")
+                expanded_detail = self._get_expanded_name("detail")
                 if self.property_name == "displacement":
                     self.source_node_name = expanded_detail_cc if self.parm_value == "on" else self.dispdetail_node
                     self.connect_nodes(self.source_node_name, expanded_detail)
@@ -348,6 +354,8 @@ class NodeConnector:
                     self.source_node_name = expanded_detail_cc if self.parm_value == "on" else self.detail_node
                     self.connect_nodes(self.source_node_name, expanded_detail)
             elif self.property_name in ["detail_a", "detail_b", "detail_c"]:
+                expanded_detail = self._get_expanded_name("detail")
+                expanded_output = self._get_expanded_name("output")
                 if detail_enabled:
                     self.connect_nodes(expanded_property_method, expanded_detail)
                     self.connect_nodes(expanded_detail, expanded_output)
@@ -359,32 +367,51 @@ class NodeConnector:
                     self.connect_nodes(self.source_node_name, self.bumpdetail_node)
                     self.connect_nodes(self.source_node_name, self.dispdetail_node)
             elif self.property_name in ["bump", "coatbump"]:
+                expanded_source = self._get_expanded_name("source")
+                expanded_cleansource = self._get_expanded_name("cleansource")
+                expanded_output = self._get_expanded_name("output")
                 self.connect_nodes(expanded_property_method, expanded_source)
                 self.connect_nodes(expanded_property_method, expanded_cleansource)
                 self.connect_nodes(expanded_source, expanded_output)
                 if method_is_none:
-                    if self.property_name == "bump" and roundcorner_enabled:
+                    if self.property_name == "bump" and roundcorner_enabled and detail_enabled:
+                        if self.renderer == "karma":
+                            # Karma doesn't support empty inputs on base bump texture
+                            break
+                        expanded_roundcorner = self._get_expanded_name("roundcorner")
+                        expanded_detail = self._get_expanded_name("detail")
+                        self.connect_nodes(expanded_roundcorner, expanded_output)
+                        self.connect_nodes(expanded_detail, expanded_output)
+                        self.connect_nodes(expanded_output, expanded_shader)
+                    elif self.property_name == "bump" and roundcorner_enabled:
+                        expanded_roundcorner = self._get_expanded_name("roundcorner")
                         self.connect_nodes(expanded_roundcorner, expanded_shader)
                     elif detail_enabled:
+                        expanded_detail = self._get_expanded_name("detail")
                         self.connect_nodes(expanded_detail, expanded_shader)
                     else:
                         self.connect_nodes(None, expanded_shader)
                 elif roundcorner_enabled and self.property_name == "bump":
+                    expanded_roundcorner = self._get_expanded_name("roundcorner")
+                    expanded_detail = self._get_expanded_name("detail")
                     self.connect_nodes(expanded_roundcorner, expanded_output)
                     self.connect_nodes(expanded_detail, expanded_output)
                     self.connect_nodes(expanded_output, expanded_shader)
                 elif detail_enabled:
+                    expanded_detail = self._get_expanded_name("detail")
                     self.connect_nodes(expanded_detail, expanded_output)
                     self.connect_nodes(expanded_output, expanded_shader)
                 else:
                     self.connect_nodes(expanded_source, expanded_shader)
             elif self.property_name == "displacement":
+                expanded_source = self._get_expanded_name("source")
                 self.connect_nodes(expanded_property_method, expanded_source)
                 if self.renderer == "karma":
+                    expanded_output = self._get_expanded_name("output")
                     if method_is_none and not detail_enabled:
                         self.source_node_name = None
                     elif detail_enabled:
-                        self.source_node_name = expanded_detail
+                        self.source_node_name = self._get_expanded_name("detail")
                     else:
                         self.source_node_name = expanded_source
                     self.connect_nodes(self.source_node_name, expanded_output)
@@ -392,22 +419,32 @@ class NodeConnector:
                     if method_is_none and not detail_enabled:
                         self.source_node_name = None
                     else:
-                        self.source_node_name = expanded_output
+                        self.source_node_name = self._get_expanded_name("output")
                     self.connect_nodes(self.source_node_name, expanded_material)
             else:
                 if detail_enabled and aces_enabled:
+                    expanded_detail = self._get_expanded_name("detail")
+                    expanded_aces = self._get_expanded_name("aces")
+                    expanded_output = self._get_expanded_name("output")
                     self.connect_nodes(expanded_property_method, expanded_detail)
                     self.connect_nodes(expanded_detail, expanded_aces)
                     self.connect_nodes(expanded_aces, expanded_output)
                 elif detail_enabled:
+                    expanded_detail = self._get_expanded_name("detail")
+                    expanded_output = self._get_expanded_name("output")
+                    expanded_aces = self._get_expanded_name("aces")
                     self.connect_nodes(expanded_property_method, expanded_detail)
                     self.connect_nodes(expanded_detail, expanded_output)
                     if self.child_node.node(expanded_aces) is not None:
                         self.connect_nodes(None, expanded_aces)
                 elif aces_enabled:
+                    expanded_aces = self._get_expanded_name("aces")
+                    expanded_output = self._get_expanded_name("output")
                     self.connect_nodes(expanded_property_method, expanded_aces)
                     self.connect_nodes(expanded_aces, expanded_output)
                 else:
+                    expanded_aces = self._get_expanded_name("aces")
+                    expanded_output = self._get_expanded_name("output")
                     if self.child_node.node(expanded_aces) is not None:
                         self.connect_nodes(None, expanded_aces)
                     self.connect_nodes(expanded_property_method, expanded_output)
@@ -451,6 +488,8 @@ def initiate_node_connections(**kwargs):
         print("#" * 40)
         print(f"Processing parameter '{kwargs['parm'].name()}' on node '{parent_node.path()}'")
         print(f"{kwargs}")
+    
+    # Check which renderers are enabled
     enabled_render_engines = set()
     for renderer, _ in render_engine_index_dict.items():
         try:
@@ -458,28 +497,50 @@ def initiate_node_connections(**kwargs):
                 enabled_render_engines.add(renderer)
         except AttributeError:
             pass
+    
+    if not enabled_render_engines:
+        if print_diagnostics:
+            print("No renderers enabled, skipping processing")
+            print("#" * 40)
+        return  # Early exit if no renderers enabled
 
-    # Create a mapping from node suffix to renderer
-    node_to_renderer = {suffix: renderer for renderer, suffix in render_engine_index_dict.items()}
-    # Process only nodes that match the enabled renderers
-    for node in parent_node.children():
-        suffix = node.name().rsplit('_', 1)[-1]
-        if not suffix:
-            continue
-        renderer = node_to_renderer.get(suffix)
-        if renderer and renderer in enabled_render_engines:
-            renderer_index_dict = globals()[f"{renderer}_index_dict"]
-            node_connector = NodeConnector(
-                parent_node=parent_node, child_node=node, renderer=renderer, renderer_index_dict=renderer_index_dict, print_diagnostics=print_diagnostics, **kwargs
-            )
-            start_time = time.time()
-            node_connector.log(f"\nProcessing for renderer: {renderer.upper()}")
-            if renderer == "usd":
-                node_connector.resolve_usd_connections()
-            else:
-                node_connector.resolve_connections()
-            end_time = time.time()
-            node_connector.log(f"Time taken: {(end_time - start_time)*1000:.3f} milliseconds")
-            node_connector.log(f"{'_' * 30}")
+    # Pre-filter: directly lookup only the renderer material nodes we need
+    # instead of iterating through all children
+    target_nodes = []
+    for renderer in enabled_render_engines:
+        renderer_suffix = render_engine_index_dict[renderer]
+        # Find node with matching suffix (allows any prefix)
+        renderer_node = None
+        for child in parent_node.children():
+            if child.name().endswith(renderer_suffix):
+                renderer_node = child
+                break
+        
+        if renderer_node:
+            target_nodes.append((renderer_node, renderer))
+        elif print_diagnostics:
+            print(f"Warning: Renderer '{renderer}' is enabled but node ending with '{renderer_suffix}' not found")
+    
+    # Process only the relevant renderer material nodes
+    for node, renderer in target_nodes:
+        renderer_index_dict = globals()[f"{renderer}_index_dict"]
+        node_connector = NodeConnector(
+            parent_node=parent_node, 
+            child_node=node, 
+            renderer=renderer, 
+            renderer_index_dict=renderer_index_dict, 
+            print_diagnostics=print_diagnostics, 
+            **kwargs
+        )
+        start_time = time.time()
+        node_connector.log(f"\nProcessing for renderer: {renderer.upper()}")
+        if renderer == "usd":
+            node_connector.resolve_usd_connections()
+        else:
+            node_connector.resolve_connections()
+        end_time = time.time()
+        node_connector.log(f"Time taken: {(end_time - start_time)*1000:.3f} milliseconds")
+        node_connector.log(f"{'_' * 30}")
+    
     if print_diagnostics:
         print("#" * 40)

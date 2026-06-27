@@ -54,15 +54,11 @@ while maintaining flexibility and control over the final result."""
 
 * *Support for both ROP and Solaris context for Redshift*
 
-* *(Mostly) Compatible with Redshift RT*
-
-    Because the shader network only wires nodes that are needed, most materials work fine in RT mode.
-
 * *OpenGL and USD Previews*
 
     OpenGL tags are linked to the materials attributes, and a USD preview surface shader
     is simultaneously built to enable more accurate viewport previews in both OBJ and Solaris contexts.
-    Vulkan experimentation will occur in the future.
+    Vulkan appears to respect these tags as well.
 
 * *Built-in Linear and sRGB Color Space Converter*
 
@@ -97,6 +93,7 @@ Connects AOVs prefixed with "mat_" that provide direct outputs of the material p
 These AOVs are designed for diagnosing properties and troubleshooting issues, rather than for compositing a final beauty pass. Disabling for final renders is recommended.
 :note: To access the AOVs when using Karma, the material assignment must be set to the child "shader_kmaMAT" node, not the top level "Uber_Material_Builder" node. This is being investigated, but may be unavoidable.
 :note: When enabled and mat_weights remains wired, Redshift uses OSL nodes which may slow down render time.
+:note: This does not currently implement the new OpenPBR material default, is not tested for 'Redshift Live' compatibility, nor does it use the new UV Context node. Plans to implement this are in the works.
 
 AOV ||
     Description ||

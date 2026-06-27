@@ -19,7 +19,7 @@ The packages folder location is dependent on your OS. See SideFX documentation [
 
 #### Compatibility
 These tools have been created with cross-platform capability in mind, if you experience any issues please let me know.
-Tested with Houdini 20.0 and 20.5.
+Tested with Houdini 20.0 - 21.0.
 ___
 
 ## CDFX Uber Material Builder
@@ -44,10 +44,11 @@ The Uber Material Builder streamlines the material creation process, allowing ar
 
    NOTE: Karma is still WIP, CPU doesn't respect 'rest' on the single-node mtlx nodes, and XPU has to compile shaders when the shader network changes, so usage can become slow and non-interactive. SideFX is working on speeding up compile time.
 - **Support for both ROP and Solaris context for Redshift**
-- **(Mostly) Compatible with Redshift RT**\
-   Because the shader network only wires nodes that are needed, most materials work fine in RT mode.
+- ~~**(Mostly) Compatible with Redshift RT**~~\
+   ~~Because the shader network only wires nodes that are needed, most materials work fine in RT mode.~~
+   Redshift RT has been replaced with Redshift Live. Compatibility is unknown at the moment, but it's something I'm looking into.
 - **OpenGL and USD Previews**\
-   OpenGL tags are linked to the materials attributes, and a USD preview surface shader is simultaneously built to enable more accurate viewport previews in both OBJ and Solaris contexts. Vulkan experimentation will occur in the future.
+   OpenGL tags are linked to the materials attributes, and a USD preview surface shader is simultaneously built to enable more accurate viewport previews in both OBJ and Solaris contexts. Vulkan appears to respect these tags as well.
 - **Built-in Linear and sRGB Color Space Converter**
 - **Future Expandability**\
    The core logic and configuration was built to be easy to expand and change. Adding additional render engines or texturing methods is straight-forward.
@@ -59,6 +60,7 @@ The Uber Material Builder streamlines the material creation process, allowing ar
 - Render engine specific versions are included, use the Karma variant if you don't have Redshift.
 - I recommended you set "REDSHIFT_DISABLE_AUTOTEXTURESCOLORSPACE" to "1" via either houdini.env or packages to prevent Redshift from changing the color space on rs texture nodes.
 - For Redshift, the OSL implementation of triplanar and hex-tiled triplanar adds 20-30s of compile time at the start of each new session. When rendering rsproxy files, each frame is considered a new session. Because of this, by default the uber material uses the default Redshift triplanar node. When set to hex-tiled triplanar, using OSL is forced.
+- This does not currently implement the new OpenPBR material default, is not tested for 'Redshift Live' compatibility, nor does it use the new UV Context node. Plans to implement this are in the works.
 ___
 
 ## HDAs
@@ -103,6 +105,10 @@ Eases and enhances the method of creating Redshift proxy files for geometry. The
 ### Rest
 Context: *SOP*\
 In addition to the default Rest SOP controls, the ability to use vertex normals for rest normals is added.
+
+### Stack Visibility
+Context: *SOP*\
+Incrementally change visibility of selected geometry, preserving previously hidden geometry. Useful for working with complex assemblies where parts may be hidden, and prevents the need for many sequential visibility nodes.   
 
 ### Transfer To Similar
 Context: *SOP*\
@@ -156,6 +162,9 @@ Recreates selected nodes in the Houdini scene while keeping their connections an
 
 ### List Node Inputs and Outputs
 Lists a selected nodes input and output connections names and indexes.
+
+### Increment Save 
+Increments the version number of the current hip file. Uses Houdini's built-in `saveAndIncrementFileName()` function.
 
 ### Zip Backups
 This tool is designed to efficiently manage and reduce the file space needed for backup files, but can be used for any file types that benefit from compression. By utilizing the `recursive_zip.py` script, a specified directory is recursively searched for folders that match a given name. Once identified, it creates a compressed `.zip` file of their contents, significantly reducing the overall file size—often by nearly a factor of 10 for `.hip/lc/nc` files.
