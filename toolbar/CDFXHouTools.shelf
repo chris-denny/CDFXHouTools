@@ -8,6 +8,7 @@
   <toolshelf name="CDFXHouTools" label="CDFXHouTools">
     <memberTool name="Stack Visibility"/>
     <memberTool name="list_node_in_out"/>
+    <memberTool name="list_unoptimized_mats"/>
     <memberTool name="recreate_nodes"/>
     <memberTool name="increment_save"/>
     <memberTool name="zip_backups"/>
@@ -30,6 +31,16 @@ from CDFX.utils import list_node_connections
 reload(list_node_connections)
 
 list_node_connections.print_node_connections()
+]]></script>
+  </tool>
+
+  <tool name="list_unoptimized_mats" label="List Unoptimized Materials" icon="SHELF_find_material">
+    <script scriptType="python"><![CDATA[import hou
+from importlib import reload
+from CDFX.utils import list_unoptimized_mats
+reload(list_unoptimized_mats)
+
+list_unoptimized_mats.print_unoptimized_mats()
 ]]></script>
   </tool>
 
